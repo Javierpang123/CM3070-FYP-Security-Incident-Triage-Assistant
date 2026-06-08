@@ -2,10 +2,418 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Multimodal Security Triage Assistant</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Flashpoint — Security Incident Triage</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">    
     </head>
     <body>
-        <h1>Security Incident Triage Assistant</h1>
-        <p>Dashboard coming soon.</p>
+
+        <!-- Title -->
+        <div class="page-title"> Multimodal Security Incident Triage Assistant  (⚡Flashpoint )</div>
+
+        <!-- Row 1: Three input panels -->
+        <div class="input-row">
+
+            <!-- TEXT INPUT PANEL -->
+            <div class="card">
+
+                <!-- Text input title -->
+                <div class="card-title">
+                    <span class="dot" id="dot-text"></span>
+                    Upload Text Log File
+                </div>
+
+                <!-- File input Div -->
+                <div class="file-input-wrapper">
+                    <label class="file-label" for="log-file-input">
+                        <span class="icon">📄</span>
+                        <span id="log-file-label-text">Click to upload log file</span>
+                        <span style="font-size:11px;">.json  .txt  .log</span>
+                    </label>
+                    <input type="file" id="log-file-input" accept=".json,.txt,.log">
+                </div>
+                <div class="file-name" id="log-file-name"></div>
+            </div>
+
+            <!-- IMAGE INPUT PANEL -->
+            <div class="card">
+
+                <!-- Image input title -->
+                <div class="card-title">
+                    <span class="dot" id="dot-vision"></span>
+                    Upload Photo
+                </div>
+
+                <!-- File input Div -->
+                <div class="file-input-wrapper">
+                    <label class="file-label" for="screenshot-input">
+                        <span class="icon">🖼</span>
+                        <span id="screenshot-label-text">Click to upload screenshot</span>
+                        <span style="font-size:11px;">.png  .jpg  .jpeg  .bmp</span>
+                    </label>
+                    <input type="file" id="screenshot-input" accept=".png,.jpg,.jpeg,.bmp,.tiff">
+                </div>
+                <div class="file-name" id="screenshot-name"></div>
+            </div>
+
+             <!-- SPEECH INPUT PANEL -->
+            <div class="card">
+
+                <!-- Speech input title -->
+                <div class="card-title">
+                    <span class="dot" id="dot-speech"></span>
+                    Upload Voice Note
+                </div>
+
+                <!-- File input Div -->
+                <div class="file-input-wrapper">
+                    <label class="file-label" for="voice-input">
+                        <span class="icon">🎙</span>
+                        <span id="voice-label-text">Click to upload voice note</span>
+                        <span style="font-size:11px;">.wav  .mp3  .m4a  .flac</span>
+                    </label>
+                    <input type="file" id="voice-input" accept=".wav,.mp3,.m4a,.flac">
+                </div>
+                <div class="file-name" id="voice-name"></div>
+            </div>
+
+        </div>
+
+        
+        <!-- Run button -->
+        <button id="submit-btn" onclick="runTriage()">Run Analysis</button>
+
+        
+        <!-- Output section -->
+        <div id="output-section">
+
+            <div class="section-heading">
+                <span class="dot" id="dot-output"></span>
+                Analysis Output Summary
+            </div>
+
+            <!-- Warnings -->
+            <div id="warnings-area"></div>
+
+            <!-- Row 2: Severity | Attack | Actions -->
+            <div class="output-row" id="output-row">
+
+                <!-- Severity Rating Panel -->
+                <div class="card" id="card-severity">
+                    <div class="card-title">Severity Rating</div>
+                    <div class="placeholder"><span>Awaiting analysis</span></div>
+                </div>
+
+                <!-- Attack Classification Panel -->
+                <div class="card" id="card-attack">
+                    <div class="card-title">Attack Name</div>
+                    <div class="placeholder"><span>Awaiting analysis</span></div>
+                </div>
+
+                <!-- Recommended Actions Panel -->
+                <div class="card" id="card-actions">
+                    <div class="card-title">Recommended Actions List</div>
+                    <div class="placeholder"><span>Awaiting analysis</span></div>
+                </div>
+
+            </div>
+
+            <!-- Row 3: Modality breakdown -->
+            <div class="breakdown-row" id="breakdown-row">
+
+                <!-- Findings from Text File -->
+                <div class="breakdown-cell inactive" id="bd-text">
+                    <div class="mod-header">
+                        <span class="mod-name">Breakdown of findings extracted from text file</span>
+                    </div>
+                    <div class="placeholder" style="min-height:80px;"><span>No input</span></div>
+                </div>
+
+                <!-- Findings from Screenshot Image file -->
+                <div class="breakdown-cell inactive" id="bd-vision">
+                    <div class="mod-header">
+                        <span class="mod-name">Breakdown of findings extracted from photo</span>
+                    </div>
+                    <div class="placeholder" style="min-height:80px;"><span>No input</span></div>
+                </div>
+
+                <!-- Findings from Voice Note file -->
+                <div class="breakdown-cell inactive" id="bd-speech">
+                    <div class="mod-header">
+                        <span class="mod-name">Breakdown of findings extracted from voice note</span>
+                    </div>
+                    <div class="placeholder" style="min-height:80px;"><span>No input</span></div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+            // Severity labels constant 
+            const severity_labels = ['', 'Informational', 'Low', 'Medium', 'High', 'Critical'];
+
+            // ---------------- //
+            // Input Listeners //
+            // -------------- //
+        
+            // Log file listener that updates filename display, activates dot indicator, 
+            // and changes label style on file selection
+            document.getElementById('log-file-input').addEventListener('change', function () {
+
+                // Get selected file name or default to empty string if no file is selected
+                const name = this.files[0]?.name || '';
+                // Update filename display and dot indicator based on whether a file is selected
+                document.getElementById('log-file-name').textContent = name;
+                // Toggle 'active' class on dot indicator based on file selection
+                document.getElementById('dot-text').classList.toggle('active', !!name);
+                // Update label text and style based on file selection
+                document.getElementById('log-file-label-text').textContent = name || 'Click to upload log file';
+                
+                // Get label associated with the log file input
+                const label = document.querySelector('label[for="log-file-input"]');
+                
+                // Change label border and background color to green if file is selected
+                if (name) {
+                    label.style.borderColor = 'green';
+                    label.style.background = 'black';
+                    document.querySelector('label[for="log-file-input"] .icon').textContent = '✅';
+                // Otherwise reset to default
+                } else {
+                    label.style.borderColor = '';
+                    label.style.background = '';
+                    document.querySelector('label[for="log-file-input"] .icon').textContent = '📄';
+                }
+            });
+
+            // Screenshot input listener with similar UI updates as log file listener
+            document.getElementById('screenshot-input').addEventListener('change', function () {
+                const name = this.files[0]?.name || '';
+                document.getElementById('screenshot-name').textContent = name;
+                document.getElementById('dot-vision').classList.toggle('active', !!name);
+                document.getElementById('screenshot-label-text').textContent = name || 'Click to upload screenshot';
+                
+                // Get label associated with the screenshot input
+                const label = document.querySelector('label[for="screenshot-input"]');
+
+                // Change label border and background color to green if file is selected
+                if (name) {
+                    label.style.borderColor = 'green';
+                    label.style.background = 'darkgreen';
+                    document.querySelector('label[for="screenshot-input"] .icon').textContent = '✅';
+                // Otherwise reset to default
+                } else {
+                    label.style.borderColor = '';
+                    label.style.background = '';
+                    document.querySelector('label[for="screenshot-input"] .icon').textContent = '🖼';
+                }
+            });
+
+            // Voice note input listener with similar UI updates as log file listener
+            document.getElementById('voice-input').addEventListener('change', function () {
+                const name = this.files[0]?.name || '';
+                document.getElementById('voice-name').textContent = name;
+                document.getElementById('dot-speech').classList.toggle('active', !!name);
+                document.getElementById('voice-label-text').textContent = name || 'Click to upload voice note';
+                
+                // Get label associated with the voice notte input
+                const label = document.querySelector('label[for="voice-input"]');
+
+                // Change label border and background color to green if file is selected
+                if (name) {
+                    label.style.borderColor = 'green';
+                    label.style.background = 'darkgreen';
+                    document.querySelector('label[for="voice-input"] .icon').textContent = '✅';
+                // Otherwise reset to default
+                } else {
+                    label.style.borderColor = '';
+                    label.style.background = '';
+                    document.querySelector('label[for="voice-input"] .icon').textContent = '🎙';
+                }
+            });
+
+            // ---------------------------------------- //
+            // Function to Run triage and fetch results from server //
+            // ---------------------------------------- //
+            async function runTriage() {
+                
+                const logFile = document.getElementById('log-file-input').files[0];
+                const screenshot = document.getElementById('screenshot-input').files[0];
+                const voice = document.getElementById('voice-input').files[0];
+
+                // Ensure at least one input is provided before running analysis
+                if (!logFile && !screenshot && !voice) {
+                    showGlobalError('Please provide at least one input before running analysis.');
+                    return;
+                }
+
+                // Disable button and show loading state while analysis is running
+                const btn = document.getElementById('submit-btn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span>Analysing…';
+
+                // Reset output cards to default "awaiting analysis" state while new analysis is running
+                resetOutputCards();
+
+                // Prepare new form data
+                const form = new FormData();
+                
+                // Append files to form data if they exist
+                if (logFile) form.append('log_file', logFile);
+                if (screenshot) form.append('screenshot', screenshot);
+                if (voice) form.append('voice', voice);
+
+                // Send POST request to server and handle response
+                try {
+                    const res  = await fetch('/analyse', { method: 'POST', body: form });
+                    const data = await res.json();
+
+                    if (!res.ok || data.status === 'error') {
+                        showGlobalError(data.message || 'Unknown error from server.');
+                        return;
+                    }
+
+                    renderTriage(data.triage, data.warnings);
+
+                // Catch errors during fetch
+                } catch (err) {
+                    showGlobalError('Could not reach Flashpoint server: ' + err.message);
+                // Reenable button and reset text regardless of success or failure
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Run Analysis';
+                }
+            }
+
+            // --------------------------------- //
+            // Function to Render Triage results //
+            // --------------------------------- //
+            function renderTriage(t, warnings) {
+                const severity = t.severity || 1;
+                const confidence = Math.round((t.confidence || 0) * 100);
+                const tactic = t.attack_classification || 'Unknown';
+                const actions = t.recommended_actions || [];
+                const entities = t.entities || [];
+                const breakdown = t.modality_breakdown || {};
+                const weights = t.fusion_weights || {};
+
+                // Warnings
+                const warnArea = document.getElementById('warnings-area');
+                warnArea.innerHTML = '';
+                if (warnings && warnings.length > 0) {
+                    warnings.forEach(w => {
+                        warnArea.innerHTML += `<div class="warning-box">⚠ ${escapeHtml(w)}</div>`;
+                    });
+                }
+
+                // Severity card data rendering
+                document.getElementById('card-severity').innerHTML = `
+                    <div class="card-title">Severity Rating</div>
+                    <div class="severity-number sev-${severity}">${severity}<span class="severity-slash">/5</span></div>
+                    <div class="severity-label-text">${severity_labels[severity]} Severity</div>
+                    <div class="confidence-bar-wrap">
+                        <div class="conf-labels">
+                            <span>Fused Confidence</span>
+                            <span>${confidence}%</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width:${confidence}%"></div>
+                        </div>
+                    </div>`;
+
+                // Attack card data rendering with entities if they exist
+                let attackHtml = `<div class="card-title">Attack Name</div>
+                                  <div class="attack-name">${escapeHtml(tactic)}</div>
+                                  <div class="mitre-chip">MITRE ATT&amp;CK — ${escapeHtml(tactic)}</div>`;
+                
+                // If entities were extracted, display them as tags below the attack name
+                if (entities.length > 0) {
+                    attackHtml += `<div class="sub-label">Extracted Entities</div>
+                        <div class="entity-list">`;
+                    entities.forEach(e => {
+                        attackHtml += `<span class="entity-tag">${escapeHtml(e)}</span>`;
+                    });
+                    attackHtml += `</div>`;
+                }
+                document.getElementById('card-attack').innerHTML = attackHtml;
+
+                // Actions card data rendering
+                let actionsHtml = `<div class="card-title">Recommended Actions List</div><ul class="actions-list">`;
+                actions.forEach(a => {actionsHtml += `<li>${escapeHtml(a)}</li>`;});
+                actionsHtml += `</ul>`;
+                document.getElementById('card-actions').innerHTML = actionsHtml;
+
+                // Modality breakdown rendering
+                // Only show cards for modalities that were provided as input and had findings
+                // Otherwise keep in inactive state
+                const modConfig = [{id: 'bd-text', key: 'text', 
+                                    label: 'Breakdown of findings extracted from text file' },
+
+                                   {id: 'bd-vision', key: 'vision', 
+                                    label: 'Breakdown of findings extracted from photo' },
+                                   
+                                    {id: 'bd-speech', key: 'speech',
+                                     label: 'Breakdown of findings extracted from voice note' }];
+
+                // Iterate through each modality configuration and 
+                // update the corresponding breakdown cell if data exists
+                modConfig.forEach(({ id, key, label }) => {
+                    const data = breakdown[key];
+                    const weight = weights[key];
+                    const cell = document.getElementById(id);
+
+                    // If data exists for this modality, populate the cell with findings and confidence
+                    if (data) {
+                        cell.classList.remove('inactive');
+                        cell.innerHTML = `
+                            <div class="mod-header">
+                                <span class="mod-name">${label}</span>
+                            </div>
+                            <div class="mod-confidence">${Math.round(data.confidence * 100)}%</div>
+                            <div class="mod-tactic">🎯 ${escapeHtml(data.attack_classification || 'Unknown')}</div>
+                            <div class="mod-weight">Fusion weight: ${weight ? (weight * 100).toFixed(0) + '%' : '—'}</div>
+                            <div class="mod-summary">${escapeHtml(data.summary || '')}</div>`;
+                    // Else keep the cell in inactive state with "No input provided" message
+                    } else {
+                        cell.classList.add('inactive');
+                        cell.innerHTML = `
+                            <div class="mod-header">
+                                <span class="mod-name">${label}</span>
+                            </div>
+                            <div class="placeholder" style="min-height:80px;"><span>No input provided</span></div>`;
+                    }
+                });
+
+                // Activate output dot indicator to signal that results have been rendered
+                document.getElementById('dot-output').classList.add('active');
+            }
+
+            // Function to reset output cards to default state before running new analysis
+            function resetOutputCards() {
+                // Clear any existing warnings
+                document.getElementById('warnings-area').innerHTML = '';
+                // Deactivate output dot indicator while resetting
+                document.getElementById('dot-output').classList.remove('active');
+
+                // Reset the three main output panels to default "awaiting analysis" state
+                ['card-severity', 'card-attack', 'card-actions'].forEach(id => {
+                    const titles = { 'card-severity': 'Severity Rating', 'card-attack': 'Attack Name', 'card-actions': 'Recommended Actions List' };
+                    document.getElementById(id).innerHTML = `
+                        <div class="card-title">${titles[id]}</div>
+                        <div class="placeholder"><span>Analysing…</span></div>`;
+                });
+            }
+
+            // Function to display global errors at the top of the output section
+            function showGlobalError(msg) {
+                // Clear existing warnings and results
+                document.getElementById('warnings-area').innerHTML = 
+                `<div class="error-box" style="margin-bottom:14px;">✖ ${escapeHtml(msg)}</div>`;
+            }
+
+            // Function to escape HTML special characters to prevent XSS 
+            function escapeHtml(str) {
+                return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+        </script>
     </body>
 </html>
