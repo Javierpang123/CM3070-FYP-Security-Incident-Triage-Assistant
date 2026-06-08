@@ -37,14 +37,7 @@ def index():
 # Main analysis endpoint to handle text, image, and audio inputs and return a triage result
 @main.route('/analyse', methods=['POST'])
 def analyse():
-    """
-    Accepts a multipart/form-data POST with any combination of:
-      - log_text   : raw text field — security log JSON or plain text
-      - screenshot : file upload — SIEM dashboard screenshot image
-      - voice      : file upload — analyst voice note audio file
-
-    At least one input must be provided. Returns a triage JSON object.
-    """
+   
     text_result = None
     vision_result = None
     speech_result = None
@@ -55,19 +48,19 @@ def analyse():
     # 1. Text / log input
     # ------------------------------------------------------------------
     log_text = request.form.get("log_text", "").strip()
-    if log_text:
+    log_file = request.files.get("log_file")
+    if log_file and log_file.filename and not log_text:
         try:
-            # Attempt to parse as JSON; fall back to raw string
+            content = log_file.read().decode("utf-8")
             try:
-                log_input = json.loads(log_text)
+                log_input = json.loads(content)
             except json.JSONDecodeError:
-                log_input = log_text
-
-            logger.info("Running text model")
+                log_input = content
+            logger.info("Running text model from uploaded file")
             text_result = analyse_text(log_input)
         except Exception as e:
-            logger.error("Text model error: %s", e)
-            errors.append(f"Text model error: {e}")
+            logger.error("Log file read error: %s", e)
+            errors.append(f"Log file error: {e}")
 
     # ------------------------------------------------------------------
     # 2. Screenshot input
