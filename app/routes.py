@@ -47,37 +47,43 @@ def analyse():
     # ------------------------------------------------------------------
     # 1. Text / log input
     # ------------------------------------------------------------------
-    log_text = request.form.get("log_text", "").strip()
-    log_file = request.files.get("log_file")
-    if log_file and log_file.filename and not log_text:
-        try:
-            content = log_file.read().decode("utf-8")
+   log_file = request.files.get("log_file")
+    if log_file and log_file.filename:
+        extension = Path(log_file.filename).suffix.lower()
+        
+        # Check if extension is inside allowed text file extension list
+        if extension not in ALLOWED_LOG_EXTENSIONS:
+            errors.append(f"Log file extension '{extension}' not supported. "
+                          f"Use one of: {', '.join(ALLOWED_LOG_EXTENSIONS)}")
+        else:
             try:
-                log_input = json.loads(content)
-            except json.JSONDecodeError:
-                log_input = content
-            logger.info("Running text model from uploaded file")
-            text_result = analyse_text(log_input)
-        except Exception as e:
-            logger.error("Log file read error: %s", e)
-            errors.append(f"Log file error: {e}")
+                content = log_file.read().decode("utf-8")
+                try:
+                    log_input = json.loads(content)
+                except json.JSONDecodeError:
+                    log_input = content
+                logger.info("Running text model from uploaded file")
+                text_result = analyse_text(log_input)
+            except Exception as e:
+                logger.error("Log file read error: %s", e)
+                errors.append(f"Log file error: {e}")
 
     # ------------------------------------------------------------------
     # 2. Screenshot input
     # ------------------------------------------------------------------
     screenshot_file = request.files.get("screenshot")
     if screenshot_file and screenshot_file.filename:
-        ext = Path(screenshot_file.filename).suffix.lower()
-        if ext not in ALLOWED_IMAGE_EXTENSIONS:
-            errors.append(
-                f"Screenshot extension '{ext}' not supported. "
-                f"Use one of: {', '.join(ALLOWED_IMAGE_EXTENSIONS)}"
-            )
+        extension = Path(screenshot_file.filename).suffix.lower()
+        
+        # Check if extension is inside allowed image file extension list
+        if extension not in ALLOWED_IMAGE_EXTENSIONS:
+            errors.append(f"Screenshot extension '{extension}' not supported. "
+                          f"Use one of: {', '.join(ALLOWED_IMAGE_EXTENSIONS)}")
         else:
             tmp_img = None
             try:
                 with tempfile.NamedTemporaryFile(
-                    suffix=ext, delete=False
+                    suffix = extension, delete = False
                 ) as tmp_img:
                     screenshot_file.save(tmp_img.name)
                     tmp_path = tmp_img.name
@@ -96,17 +102,17 @@ def analyse():
     # ------------------------------------------------------------------
     voice_file = request.files.get("voice")
     if voice_file and voice_file.filename:
-        ext = Path(voice_file.filename).suffix.lower()
-        if ext not in ALLOWED_AUDIO_EXTENSIONS:
-            errors.append(
-                f"Audio extension '{ext}' not supported. "
-                f"Use one of: {', '.join(ALLOWED_AUDIO_EXTENSIONS)}"
-            )
+        extension = Path(voice_file.filename).suffix.lower()
+        
+        # Check if extension is inside allowed audio file extension list
+        if extension not in ALLOWED_AUDIO_EXTENSIONS:
+            errors.append(f"Audio extension '{extension}' not supported. "
+                          f"Use one of: {', '.join(ALLOWED_AUDIO_EXTENSIONS)}")
         else:
             tmp_audio = None
             try:
                 with tempfile.NamedTemporaryFile(
-                    suffix=ext, delete=False
+                    suffix = extension, delete=False
                 ) as tmp_audio:
                     voice_file.save(tmp_audio.name)
                     tmp_path = tmp_audio.name
@@ -142,24 +148,17 @@ def analyse():
         )
     except Exception as e:
         logger.error("Fusion error: %s", e)
-        return jsonify({
-            "status": "error",
-            "message": f"Fusion error: {e}",
-        }), 500
+        return jsonify({"status": "error",
+                        "message": f"Fusion error: {e}",
+                        }), 500
 
     # ------------------------------------------------------------------
     # 6. Return triage result
     # ------------------------------------------------------------------
-    response = {
-        "status": "ok",
-        "triage": triage,
-    }
+    response = {"status": "ok","triage": triage}
     if errors:
         response["warnings"] = errors
 
     return jsonify(response), 200
 
-# Function to check service health
-@main.route('/health')
-def health():
-    return jsonify({"status": "ok", "message": "Flashpoint is running"})
+
