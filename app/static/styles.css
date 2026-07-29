@@ -2,7 +2,7 @@
 
 :root {
     --font: 'Segoe UI', system-ui, sans-serif;
-    --mono: 'Consolas', 'Courier New', monospace;
+    --mono-font: 'Consolas', 'Courier New', monospace;
 }
 
 body {
@@ -15,7 +15,7 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Title                                                                */
+/* Title                                                 
 /* ------------------------------------------------------------------ */
 .page-title {
     text-align: center;
@@ -31,7 +31,7 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Cards                                                                */
+/* Cards                                                       
 /* ------------------------------------------------------------------ */
 .card {
     background: #161b22;
@@ -65,7 +65,7 @@ body {
 }
 
 /* ------------------------------------------------------------------ */
-/* Row 1 — Three input panels                                          */
+/* Row 1 — Three input panels                                   
 /* ------------------------------------------------------------------ */
 .input-row {
     display: grid;
@@ -80,7 +80,7 @@ textarea {
     border: 1px solid #30363d;
     border-radius: 6px;
     color: white;
-    font-family: var(--mono);
+    font-family: var(--mono-font);
     font-size: 12px;
     padding: 10px;
     resize: vertical;
@@ -142,7 +142,7 @@ input[type="file"] {
 }
 
 /* ------------------------------------------------------------------ */
-/* Run button                                                           */
+/* Run button                                                    
 /* ------------------------------------------------------------------ */
 #submit-btn {
     width: 100%;
@@ -169,7 +169,7 @@ input[type="file"] {
 }
 
 /* ------------------------------------------------------------------ */
-/* Section heading                                                      */
+/* Report Section heading                                       
 /* ------------------------------------------------------------------ */
 .section-heading {
     font-size: 13px;
@@ -188,6 +188,39 @@ input[type="file"] {
 .section-heading .dot.active {
     background: green;
 }
+
+/* Layout for the Analysis Output Summary heading + download button */
+.section-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* PDF download button */
+.download-btn {
+    background: transparent;
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.download-btn:hover:not(:disabled) {
+    background: #ff6b6b;
+    color: #0a0a0a;
+}
+
+.download-btn:disabled {
+    border-color: #444;
+    color: #666;
+    cursor: not-allowed;
+}
+
+
 
 /* ------------------------------------------------------------------ */
 /* Row 2 — Main output: severity | attack | actions                    */
@@ -298,7 +331,7 @@ input[type="file"] {
     border-radius: 4px;
     padding: 2px 7px;
     font-size: 11px;
-    font-family: var(--mono);
+    font-family: var(--mono-font);
     color: gray;
 }
 
@@ -395,7 +428,7 @@ input[type="file"] {
 
 .mod-weight {
     font-size: 11px;
-    color: purple;
+    color: yellow;
 }
 
 .mod-summary {
