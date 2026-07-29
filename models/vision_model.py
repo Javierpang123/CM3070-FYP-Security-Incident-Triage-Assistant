@@ -5,6 +5,7 @@ import logging
 import re
 from pathlib import Path
 from typing import Union
+from PIL import Image, ImageOps, ImageStat
 from models.utilities import SCREEN_KEYWORDS, infer_severity, extract_entities, classify_tactic
 logger = logging.getLogger(__name__)
 
@@ -47,16 +48,7 @@ def check_tesseract():
 
 # Function to generate caption for image using BLIP
 def blip_caption(image) -> tuple[str, float]:
-    """
-    Generate a caption for the image using BLIP.
-
-    Returns
-    -------
-    tuple[str, float]
-        (caption_text, confidence_score)
-        Confidence is approximated from caption length and content —
-        BLIP base does not expose token probabilities directly.
-    """
+    
     load_blip()
     import torch
 
@@ -77,6 +69,35 @@ def blip_caption(image) -> tuple[str, float]:
     confidence = min(0.85, 0.40 + (word_count * 0.025))
     return caption, round(confidence, 2)
 
+# Function to normalise a screenshot for Tesseract OCR, regardless if the
+# dashboard's light/dark theme. Tesseract is trained predominantly on
+# dark-text-on-light-background documents so dark-themed dashboard
+# screenshots need to be inverted before OCR
+def preprocess_for_ocr(image):
+    
+    # Convert to grayscale for brightness analysis and thresholding
+    gray = image.convert("L")
+
+    # Mean pixel brightness: 0 = black, 255 = white
+    mean_brightness = ImageStat.Stat(gray).mean[0]
+
+    # Dark-themed panel (dark background, light text) -> invert so text
+    # becomes dark-on-light, matching Tesseract's expected input
+    if mean_brightness < 128:
+        gray = ImageOps.invert(gray)
+
+    # Upscale small text for better character recognition
+    width, height = gray.size
+    if width < 1500:
+        scale = 1500 / width
+        gray = gray.resize((int(width * scale), int(height * scale)), Image.LANCZOS)
+
+    # Fixed-threshold binarisation after normalisation, to sharpen edges
+    # for Tesseract's character segmentation
+    gray = gray.point(lambda x: 0 if x < 140 else 255, mode="L")
+
+    return gray
+
 # Function to extract text from image using Tesseract OCR
 def tesseract_extract(image) -> str:
     
@@ -86,28 +107,15 @@ def tesseract_extract(image) -> str:
     
     # Extract all visible text from the image using Tesseract.
     import pytesseract
-    text = pytesseract.image_to_string(image, config="--psm 6")
+    processed = preprocess_for_ocr(image)
+    text = pytesseract.image_to_string(processed, config="--psm 6")
     # Collapse excessive whitespace
     return re.sub(r"\s+", " ", text).strip()
 
 
 # Function to analyse Kibana/SIEM screenshot image using BLIP and Tesseract
 def analyse_image(image_input: Union[str, Path, object]) -> dict:
-    """
-    Returns following dictionary (standardised wrapper output):
-    
-        Standardised wrapper output:
-        {
-            "model": "vision",
-            "confidence": float,
-            "entities": list[str],
-            "summary": str,
-            "attack_classification": str,
-            "severity": int,
-            "raw": str   # combined OCR text
-        }
-    """
-    
+
     # Load image (from path or PIL Image)
     try:
         from PIL import Image
@@ -138,8 +146,10 @@ def analyse_image(image_input: Union[str, Path, object]) -> dict:
     attack_cls = classify_tactic(combined_text, SCREEN_KEYWORDS)
     entities = extract_entities(ocr_text)
 
-    # Confidence: BLIP score boosted slightly if OCR also found entities
     confidence = blip_confidence
+    
+    # Confidence: BLIP score boosted slightly 
+    # if OCR also found entities
     if entities:
         confidence = min(0.90, confidence + 0.05)
     if ocr_text:
@@ -152,15 +162,13 @@ def analyse_image(image_input: Union[str, Path, object]) -> dict:
     summary = build_summary(caption, ocr_text, attack_cls)
 
     # Return standardised wrapper output
-    return {
-        "model": "vision",
-        "confidence": round(confidence, 2),
-        "entities": entities,
-        "summary": summary,
-        "attack_classification": attack_cls,
-        "severity": severity,
-        "raw": combined_text,
-    }
+    return {"model": "vision",
+            "confidence": round(confidence, 2),
+            "entities": entities,
+            "attack_classification": attack_cls,
+            "severity": severity,
+            "summary": summary,
+            "raw": combined_text}
 
 # Function to build a concise summary from BLIP caption and OCR findings.
 def build_summary(caption: str, ocr_text: str, attack_cls: str) -> str:
