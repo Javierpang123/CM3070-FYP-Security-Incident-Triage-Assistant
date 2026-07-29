@@ -1,31 +1,32 @@
 """
-routes.py
-Flask route definitions for Flashpoint.
-
-POST /analyse  — accepts multipart form with optional log (JSON text),
-                 screenshot (image file), and voice (audio file).
-                 Runs whichever model wrappers have input, fuses results,
-                 and returns a triage JSON response.
-GET  /         — serves the single-page dashboard
-GET  /health   — service health check
+POST /analyse = Analyse route that accepts multipart form with 
+                optional log (JSON text),
+                screenshot (image file), and voice (audio file).
+                Runs whichever model wrappers have input, fuses results,
+                and returns a triage JSON response.
+                  
+GET / = Main route that serves the single page dashboard
 """
 
-import json
+import io
 import logging
 import tempfile
 import os
 from pathlib import Path
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, render_template, request, send_file
 
 from models import analyse_text, analyse_image, analyse_audio
+from models.text_model import parse_log_input
 from orchestrator import late_fusion_orchestrator
+from .pdf_report import build_pdf_report
 
 logger = logging.getLogger(__name__)
 
 main = Blueprint('main', __name__)
 
 # Define allowed file extensions for uploads
+ALLOWED_LOG_EXTENSIONS = {".json", ".txt", ".log"}
 ALLOWED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tiff"}
 ALLOWED_AUDIO_EXTENSIONS = {".wav", ".mp3", ".m4a", ".flac"}
 
@@ -34,7 +35,7 @@ ALLOWED_AUDIO_EXTENSIONS = {".wav", ".mp3", ".m4a", ".flac"}
 def index():
     return render_template('index.html')
 
-# Main analysis endpoint to handle text, image, and audio inputs and return a triage result
+# Main analysis route to handle text, image, and audio inputs and return a triage result
 @main.route('/analyse', methods=['POST'])
 def analyse():
    
@@ -47,7 +48,7 @@ def analyse():
     # ------------------------------------------------------------------
     # 1. Text / log input
     # ------------------------------------------------------------------
-   log_file = request.files.get("log_file")
+    log_file = request.files.get("log_file")
     if log_file and log_file.filename:
         extension = Path(log_file.filename).suffix.lower()
         
@@ -58,10 +59,7 @@ def analyse():
         else:
             try:
                 content = log_file.read().decode("utf-8")
-                try:
-                    log_input = json.loads(content)
-                except json.JSONDecodeError:
-                    log_input = content
+                log_input = parse_log_input(content)
                 logger.info("Running text model from uploaded file")
                 text_result = analyse_text(log_input)
             except Exception as e:
@@ -111,9 +109,7 @@ def analyse():
         else:
             tmp_audio = None
             try:
-                with tempfile.NamedTemporaryFile(
-                    suffix = extension, delete=False
-                ) as tmp_audio:
+                with tempfile.NamedTemporaryFile(suffix = extension, delete=False) as tmp_audio:
                     voice_file.save(tmp_audio.name)
                     tmp_path = tmp_audio.name
 
@@ -130,22 +126,19 @@ def analyse():
     # 4. Validate at least one input was processed
     # ------------------------------------------------------------------
     if text_result is None and vision_result is None and speech_result is None:
-        return jsonify({
-            "status": "error",
-            "message": "No valid inputs provided. Supply at least one of: "
-                       "log_text, screenshot, or voice.",
-            "errors": errors,
-        }), 400
+        return jsonify({"status": "error",
+                        "message": "No valid inputs provided. Supply at least one of: "
+                        "log_text, screenshot, or voice.",
+                        "errors": errors,
+                        }), 400
 
     # ------------------------------------------------------------------
     # 5. Late fusion
     # ------------------------------------------------------------------
     try:
-        triage = late_fusion_orchestrator(
-            text_result=text_result,
-            vision_result=vision_result,
-            speech_result=speech_result,
-        )
+        triage = late_fusion_orchestrator(text_result=text_result,
+                                          vision_result=vision_result,
+                                          speech_result=speech_result)
     except Exception as e:
         logger.error("Fusion error: %s", e)
         return jsonify({"status": "error",
@@ -161,4 +154,27 @@ def analyse():
 
     return jsonify(response), 200
 
+# Route to generate a downloadable PDF triage report 
+# from triage result posted by the frontend 
+@main.route('/download-report', methods=['POST'])
+def download_report():
+    triage = request.get_json(silent=True)
+
+    if not triage:
+        return jsonify({"status": "error",
+                        "message": "No triage data provided for report generation."
+                        }), 400
+
+    try:
+        pdf_bytes = build_pdf_report(triage)
+    except Exception as e:
+        logger.error("PDF report generation error: %s", e)
+        return jsonify({"status": "error",
+                        "message": f"PDF generation error: {e}"
+                        }), 500
+
+    return send_file(io.BytesIO(pdf_bytes), 
+                     mimetype="application/pdf",
+                     as_attachment=True,
+                     download_name="flashpoint_triage_report.pdf",)
 
