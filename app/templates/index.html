@@ -87,9 +87,12 @@
         <!-- Output section -->
         <div id="output-section">
 
-            <div class="section-heading">
-                <span class="dot" id="dot-output"></span>
-                Analysis Output Summary
+            <div class="section-heading section-heading-row">
+                <span>
+                    <span class="dot" id="dot-output"></span>
+                    Analysis Output Summary
+                </span>
+                <button id="download-pdf-btn" class="download-btn" onclick="downloadReport()" disabled>⬇ Download PDF Report</button>
             </div>
 
             <!-- Warnings -->
@@ -152,6 +155,10 @@
             // Severity labels constant 
             const severity_labels = ['', 'Informational', 'Low', 'Medium', 'High', 'Critical'];
 
+            // Holds the most recent triage result so the PDF download
+            // button can send it to the server without re-running analysis
+            let lastTriageResult = null;
+
             // ---------------- //
             // Input Listeners //
             // -------------- //
@@ -198,7 +205,7 @@
                 // Change label border and background color to green if file is selected
                 if (name) {
                     label.style.borderColor = 'green';
-                    label.style.background = 'darkgreen';
+                    label.style.background = 'black';
                     document.querySelector('label[for="screenshot-input"] .icon').textContent = '✅';
                 // Otherwise reset to default
                 } else {
@@ -221,7 +228,7 @@
                 // Change label border and background color to green if file is selected
                 if (name) {
                     label.style.borderColor = 'green';
-                    label.style.background = 'darkgreen';
+                    label.style.background = 'black';
                     document.querySelector('label[for="voice-input"] .icon').textContent = '✅';
                 // Otherwise reset to default
                 } else {
@@ -272,7 +279,14 @@
                         return;
                     }
 
+                    // Render triage results and warnings in the output section
                     renderTriage(data.triage, data.warnings);
+                    
+                    // Store the latest triage result for PDF download
+                    lastTriageResult = data.triage;
+
+                    // Enable the PDF download button now that results are available
+                    document.getElementById('download-pdf-btn').disabled = false;
 
                 // Catch errors during fetch
                 } catch (err) {
@@ -370,7 +384,7 @@
                             </div>
                             <div class="mod-confidence">${Math.round(data.confidence * 100)}%</div>
                             <div class="mod-tactic">🎯 ${escapeHtml(data.attack_classification || 'Unknown')}</div>
-                            <div class="mod-weight">Fusion weight: ${weight ? (weight * 100).toFixed(0) + '%' : '—'}</div>
+                            <div class="mod-weight">Fusion weight: ${weight ? (weight * 100).toFixed(2) + '%' : '—'}</div>
                             <div class="mod-summary">${escapeHtml(data.summary || '')}</div>`;
                     // Else keep the cell in inactive state with "No input provided" message
                     } else {
@@ -391,8 +405,13 @@
             function resetOutputCards() {
                 // Clear any existing warnings
                 document.getElementById('warnings-area').innerHTML = '';
+                
                 // Deactivate output dot indicator while resetting
                 document.getElementById('dot-output').classList.remove('active');
+
+                // Disable PDF download until the new analysis completes
+                document.getElementById('download-pdf-btn').disabled = true;
+                lastTriageResult = null;
 
                 // Reset the three main output panels to default "awaiting analysis" state
                 ['card-severity', 'card-attack', 'card-actions'].forEach(id => {
@@ -413,6 +432,89 @@
             // Function to escape HTML special characters to prevent XSS 
             function escapeHtml(str) {
                 return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
+            // Function to download the current triage result as a PDF report. 
+            // Uses the File System Access API where available so the user can  
+            // choose the exact save location and filename via a native file explorer
+            async function downloadReport() {
+
+                // Ensure that a triage result exists before attempting to download
+                if (!lastTriageResult) {
+                    showGlobalError('Run an analysis first before downloading a report.');
+                    return;
+                }
+
+                // Disable the download button and show a "Generating…" state while the PDF is being generated
+                const btn = document.getElementById('download-pdf-btn');
+                const originalLabel = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Generating…';
+
+                // Try to send the last triage result to the server to generate a PDF report
+                try {
+                    const res = await fetch('/download-report', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(lastTriageResult),
+                    });
+
+                    // If the server responds with an error, show the error message to the user
+                    if (!res.ok) {
+                        const err = await res.json().catch(() => ({}));
+                        showGlobalError(err.message || 'Failed to generate PDF report.');
+                        return;
+                    }
+
+                    // Convert the response to a Blob and prepare for download
+                    const blob = await res.blob();
+                    const suggestedName = `flashpoint_triage_report_${Date.now()}.pdf`;
+
+                    // Use File System Access API if available to let user choosing save location and filename
+                    if (window.showSaveFilePicker) {
+                        // Try to open the native save file dialog and write the PDF blob to the chosen location
+                        try {
+                            const handle = await window.showSaveFilePicker({
+                                suggestedName: suggestedName,
+                                types: [{
+                                    description: 'PDF Document',
+                                    accept: { 'application/pdf': ['.pdf'] },
+                                }],
+                            });
+                            // Create a writable stream and write the PDF blob to it
+                            const writable = await handle.createWritable();
+                            await writable.write(blob);
+                            await writable.close();
+
+                        // Catch errors from the file picker, but ignore if the user simply canceled the dialog
+                        } catch (pickerErr) {
+                            // User closed the dialog without saving — not an error
+                            if (pickerErr.name !== 'AbortError') {
+                                showGlobalError('Could not save file: ' + pickerErr.message);
+                            }
+                        }
+                    
+                    // If File System Access API is not available, fallback to standard browser download flow
+                    } else {
+                        // Fallback: create a temporary anchor element to trigger the download
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = suggestedName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }
+                // Catch any errors during the fetch or PDF generation process and display them to the user
+                } catch (err) {
+                    showGlobalError('Could not generate report: ' + err.message);
+                
+                // Reenable the download button and reset its label regardless of success or failure
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalLabel;
+                }
             }
         </script>
     </body>
