@@ -28,13 +28,28 @@ ATTACK_TACTICS = ["Initial Access", "Execution", "Persistence",
 # -----------------------------------------------------------------------------
 SYSTEM_PROMPT = """ You are a cybersecurity analyst assistant specialising in Windows Event Log triage.
 
-You will be given a security log entry or a JSON object containing Windows Event Log data.
-Your task is to analyse it and return a JSON object - nothing else, no preamble, no markdown.
+You will be given a security log entry, a single JSON object containing one Windows Event
+Log event, or a JSON object of the form {"event_count": N, "events": [...]} containing
+several events from the same incident, ordered by timestamp. In the multi-event case, treat
+the events as a single chronological chain: your classification should reflect the tactic
+represented by the incident as a whole, not just the first or the most frequent event type.
+Your task is to analyse it and return a JSON object - nothing else, no preamble, no markdown
 
 CLASSIFICATION PRINCIPLE
 Classify by the intent and effect of the logged action, not by the mechanism that carried it out.
 An event triggered by a normal administrative process or a successful logon is not automatically
 "Execution", determine what the action actually changes or enables for the attacker.
+
+MULTI-EVENT CHAINS
+When given several events from the same incident, most of them will be routine or supporting
+activity (e.g. ordinary process creation, logons, network connections) that exists only to set
+up a single defining action. Identify that defining action - the event that establishes a new
+capability or goal for the attacker (e.g. a scheduled task or registry run key created, a
+credential dumped or reset, a remote logon to another host, an outbound connection to an
+unfamiliar destination) - and classify the whole incident by that event's tactic, even if it
+is not the most frequent event type in the chain. Do not default to Execution just because most
+events in the chain are process-creation events; look for what those processes were building
+toward.
 
 COMMON EVENT ID / TACTIC ASSOCIATIONS (use as a guide, not a fixed rule. The actual log content always takes priority over this table):
     - 4794 (DSRM password set), 4723/4724 (password change/reset), 4776 (credential validation),
@@ -83,8 +98,39 @@ Why: creating the scheduled task is the mechanism for surviving a reboot, so the
 Persistence - even though the payload itself (encoded PowerShell) would be Execution if it
 were the standalone action being logged in isolation.
 
+Example 3 (multi-event incident - this is the format you will most often receive)
+Input log:
+{
+  "event_count": 4,
+  "events": [
+    {"event_id": "4688", "timestamp": "2019-02-13T18:03:10Z", "action": "Process Creation",
+     "computer": "PC01.example.corp", "description": "A new process has been created.",
+     "event_data": {"NewProcessName": "C:\\Windows\\System32\\cmd.exe", "SubjectUserName": "user01"}},
+    {"event_id": "4688", "timestamp": "2019-02-13T18:03:22Z", "action": "Process Creation",
+     "computer": "PC01.example.corp", "description": "A new process has been created.",
+     "event_data": {"NewProcessName": "C:\\Windows\\System32\\whoami.exe", "SubjectUserName": "user01"}},
+    {"event_id": "4688", "timestamp": "2019-02-13T18:03:31Z", "action": "Process Creation",
+     "computer": "PC01.example.corp", "description": "A new process has been created.",
+     "event_data": {"NewProcessName": "C:\\Windows\\System32\\schtasks.exe", "SubjectUserName": "user01"}},
+    {"event_id": "4698", "timestamp": "2019-02-13T18:03:32Z", "action": "Scheduled Task Created",
+     "computer": "PC01.example.corp", "description": "A scheduled task was created.",
+     "event_data": {"TaskName": "\\Microsoft\\Windows\\UpdateHealth", "Command": "powershell.exe -enc <base64>"}}
+  ]
+}
+Correct output:
+{
+  "attack_classification": "Persistence",
+  "severity": 4,
+  "entities": ["cmd.exe", "whoami.exe", "schtasks.exe", "UpdateHealth", "user01", "PC01.example.corp"],
+  "summary": "A sequence of process launches culminated in a scheduled task being created to run an encoded PowerShell command, establishing persistence across reboots.",
+  "confidence_hint": "high"
+}
+Why: three of the four events are ordinary process creations that, viewed alone, would look
+like Execution. But they exist to set up the fourth event - the scheduled task creation -
+which is the one that actually changes the attacker's position (a task that survives reboot).
+The chain is classified by that defining event, Persistence, not by the majority event type.
+
 END EXAMPLES - now analyse the actual log entry given to you below using this same
-intent-and-effect reasoning.
 
 The JSON object must contain exactly these keys:
     - "attack_classification": the single most likely MITRE ATT&CK tactic name from this list:
@@ -210,11 +256,15 @@ def condense_events(events: list) -> dict:
         if not isinstance(host_info, dict):
             host_info = {}
 
+        message = evt.get("message", "")
+        description = message.split("\n", 1)[0].strip() if message else None
+
         condensed.append({
             "event_id": winlog.get("event_id") or event_info.get("code"),
             "timestamp": evt.get("@timestamp"),
             "action": event_info.get("action") or winlog.get("task"),
             "computer": winlog.get("computer_name") or host_info.get("name"),
+            "description": description,
             "event_data": winlog.get("event_data", {}),
         })
 
@@ -305,6 +355,20 @@ def analyse_text(log_input: Union[str, dict]) -> dict:
 
     # Extract classification fields from the parsed response
     attack_cls = parsed.get("attack_classification", "Unknown")
+    
+    # Mistral occasionally returns a tactic name outside the vocabulary
+    # specified in the system prompt (e.g. "Account Management" instead
+    # of one of the 14 listed MITRE tactics). Map these to "Unknown"
+    # rather than surfacing an invalid label to the analyst or to
+    # fusion.py's RECOMMENDED_ACTIONS lookup, which only has entries for
+    # the sanctioned vocabulary.
+    if attack_cls not in ATTACK_TACTICS and attack_cls != "Unknown":
+        logger.warning(
+            "Model returned out-of-vocabulary tactic '%s' - mapping to Unknown",
+            attack_cls,
+        )
+        attack_cls = "Unknown"
+
     confidence_hint = parsed.get("confidence_hint", "low")
     
     # Convert qualitative confidence hint to a numeric score

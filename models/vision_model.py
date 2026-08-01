@@ -154,7 +154,10 @@ def analyse_image(image_input: Union[str, Path, object]) -> dict:
         confidence = min(0.90, confidence + 0.05)
     if ocr_text:
         confidence = min(0.90, confidence + 0.05)
-
+        
+    if attack_cls == "Unknown":
+        confidence = 0.0
+        
     # Severity heuristic from OCR text
     severity = infer_severity(combined_text)
 

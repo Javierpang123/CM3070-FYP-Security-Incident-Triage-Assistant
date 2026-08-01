@@ -23,7 +23,6 @@ WHISPER_MODEL_SIZE = "base"
 
 # Function to load the Whisper model (called on first use)
 def load_whisper():
-    """Load Whisper model (once, on first call)."""
     global _whisper_model
     if _whisper_model is None:
         import whisper
@@ -62,19 +61,6 @@ def analyse_audio(audio_input: Union[str, Path]) -> dict:
     ------------------------------------------------
     audio_input : str or Path to a .wav audio file.
     ------------------------------------------------
-
-    Returns following dictionary (standardised wrapper output):
-    
-        Standardised wrapper output:
-        {
-            "model": "speech",
-            "confidence": float,
-            "entities": list[str],
-            "summary": str,
-            "attack_classification": str,
-            "severity": int,
-            "raw": str   # full transcript text
-        }
     """
     audio_path = Path(audio_input)
     
@@ -86,12 +72,11 @@ def analyse_audio(audio_input: Union[str, Path]) -> dict:
     # Transcribe audio using Whisper
     try:
         load_whisper()
-        result = _whisper_model.transcribe(
-            str(audio_path),
-            language="en",
-            verbose=False,
-            fp16=False,  # CPU-safe; GPU users can override
-        )
+        result = _whisper_model.transcribe(str(audio_path),
+                                           language="en",
+                                           verbose=False,
+                                           fp16=False,  # CPU-safe; GPU users can override
+                                           )
     except Exception as e:
         logger.error("Whisper transcription failed: %s", e)
         return error_result(f"Transcription error: {e}")
@@ -108,6 +93,10 @@ def analyse_audio(audio_input: Union[str, Path]) -> dict:
     # Compute confidence, classify attack tactic, infer severity, and extract entities from transcript.
     confidence = compute_confidence(segments)
     attack_cls = classify_tactic(transcript, SPEECH_KEYWORDS)
+    
+    if attack_cls == "Unknown":
+        confidence = 0.0
+    
     severity = infer_severity(transcript)
     entities = extract_entities(transcript)
 
@@ -116,16 +105,14 @@ def analyse_audio(audio_input: Union[str, Path]) -> dict:
     words = first_sentence.split()
     summary = " ".join(words[:30]) + ("..." if len(words) > 30 else "")
 
-    # Return the standardised result dictionary
-    return {
-        "model": "speech",
-        "confidence": confidence,
-        "entities": entities,
-        "summary": summary,
-        "attack_classification": attack_cls,
-        "severity": severity,
-        "raw": transcript,
-    }
+    # Return standardised wrapper output
+    return {"model": "speech",
+            "confidence": confidence,
+            "entities": entities,
+            "attack_classification": attack_cls,
+            "severity": severity,
+            "summary": summary,
+            "raw": transcript}
 
 # Function to return a standardised error result for speech model
 def error_result(message: str) -> dict:
