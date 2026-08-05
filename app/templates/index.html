@@ -26,7 +26,7 @@
                 <!-- File input Div -->
                 <div class="file-input-wrapper">
                     <label class="file-label" for="log-file-input">
-                        <span class="icon">📄</span>
+                        <span class="icon" aria-hidden="true">📄</span>
                         <span id="log-file-label-text">Click to upload log file</span>
                         <span style="font-size:11px;">.json  .txt  .log</span>
                     </label>
@@ -68,7 +68,7 @@
                 <!-- File input Div -->
                 <div class="file-input-wrapper">
                     <label class="file-label" for="voice-input">
-                        <span class="icon">🎙</span>
+                        <span class="icon" aria-hidden="true">🎙</span>
                         <span id="voice-label-text">Click to upload voice note</span>
                         <span style="font-size:11px;">.wav  .mp3  .m4a  .flac</span>
                     </label>
@@ -80,8 +80,11 @@
         </div>
 
         
-        <!-- Run button -->
-        <button id="submit-btn" onclick="runTriage()">Run Analysis</button>
+        <!-- Run / Reset buttons -->
+        <div class="button-row">
+            <button id="submit-btn" onclick="runTriage()">Run Analysis</button>
+            <button id="reset-btn" class="reset-btn" onclick="clearAll()" type="button">Clear / Reset</button>
+        </div>
 
         
         <!-- Output section -->
@@ -89,16 +92,20 @@
 
             <div class="section-heading section-heading-row">
                 <span>
-                    <span class="dot" id="dot-output"></span>
+                    <span class="dot" id="dot-output" aria-hidden="true"></span>
                     Analysis Output Summary
                 </span>
                 <button id="download-pdf-btn" class="download-btn" onclick="downloadReport()" disabled>⬇ Download PDF Report</button>
             </div>
 
-            <!-- Warnings -->
-            <div id="warnings-area"></div>
+            <!-- Warnings / errors — announced immediately to screen readers -->
+            <div id="warnings-area" role="alert" aria-live="assertive"></div>
 
-            <!-- Row 2: Severity | Attack | Actions -->
+            <!-- Results are announced once analysis completes, so updates 
+             don't interrupt whatever the screen reader user is doing -->
+            <div id="results-live-region" aria-live="polite" aria-atomic="false">
+
+            <!-- Row 2: Severity | Attack Classification | Actions -->
             <div class="output-row" id="output-row">
 
                 <!-- Severity Rating Panel -->
@@ -109,7 +116,7 @@
 
                 <!-- Attack Classification Panel -->
                 <div class="card" id="card-attack">
-                    <div class="card-title">Attack Name</div>
+                    <div class="card-title">Attack Classification</div>
                     <div class="placeholder"><span>Awaiting analysis</span></div>
                 </div>
 
@@ -155,6 +162,28 @@
             // Severity labels constant 
             const severity_labels = ['', 'Informational', 'Low', 'Medium', 'High', 'Critical'];
 
+            // Plain-English description for MITRE ATT&CK tactics, shown alongside the
+            // technical tactic name so non-specialist IT generalists can understand
+            // what a classification means without looking it up externally
+            const tactic_descriptions = {
+                "Initial Access": "The attacker is trying to get an initial foothold into the network.",
+                "Execution": "Attacker-controlled code was run on a system.",
+                "Persistence": "The attacker is trying to maintain access, even after a reboot or credential change.",
+                "Privilege Escalation": "The attacker is trying to gain higher-level permissions.",
+                "Defense Evasion": "The attacker is trying to avoid being detected by security tools or logs.",
+                "Credential Access": "The attacker is trying to steal account names, passwords, or other login credentials.",
+                "Discovery": "The attacker is trying to learn about the environment, such as users, systems, or network layout.",
+                "Lateral Movement": "The attacker is moving from one system to another within the network.",
+                "Collection": "The attacker is gathering data relevant to their goal.",
+                "Command and Control": "The compromised system is communicating with attacker-controlled infrastructure.",
+                "Exfiltration": "The attacker is trying to move data out of the network.",
+                "Impact": "The attacker is trying to manipulate, interrupt, or destroy systems and data.",
+                "Reconnaissance": "The attacker is gathering information to plan a future attack.",
+                "Resource Development": "The attacker is setting up resources to support an attack.",
+                "Unknown": "The system could not confidently determine a MITRE ATT&CK tactic from the available input.",
+            };
+            
+            
             // Holds the most recent triage result so the PDF download
             // button can send it to the server without re-running analysis
             let lastTriageResult = null;
@@ -256,7 +285,8 @@
                 // Disable button and show loading state while analysis is running
                 const btn = document.getElementById('submit-btn');
                 btn.disabled = true;
-                btn.innerHTML = '<span class="spinner"></span>Analysing…';
+                btn.setAttribute('aria-busy', 'true');
+                btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>Analysing…';
 
                 // Reset output cards to default "awaiting analysis" state while new analysis is running
                 resetOutputCards();
@@ -294,6 +324,7 @@
                 // Reenable button and reset text regardless of success or failure
                 } finally {
                     btn.disabled = false;
+                    btn.removeAttribute('aria-busy');
                     btn.textContent = 'Run Analysis';
                 }
             }
@@ -329,25 +360,31 @@
                             <span>Fused Confidence</span>
                             <span>${confidence}%</span>
                         </div>
-                        <div class="confidence-bar">
+                        <div class="confidence-bar" role="progressbar" aria-label="Fused confidence" aria-valuenow="${confidence}" aria-valuemin="0" aria-valuemax="100">
                             <div class="confidence-fill" style="width:${confidence}%"></div>
                         </div>
                     </div>`;
 
                 // Attack card data rendering with entities if they exist
+                const tacticExplanation = tactic_descriptions[tactic] || tactic_descriptions['Unknown'];
+                
+                // Construct the HTML for the attack card, including the tactic name, MITRE-ATT&CK tactic reference, and tactic explanation
                 let attackHtml = `<div class="card-title">Attack Name</div>
                                   <div class="attack-name">${escapeHtml(tactic)}</div>
-                                  <div class="mitre-chip">MITRE ATT&amp;CK — ${escapeHtml(tactic)}</div>`;
+                                  <div class="mitre-chip">MITRE ATT&amp;CK — ${escapeHtml(tactic)}</div>
+                                  <div class="tactic-explanation">${escapeHtml(tacticExplanation)}</div>`;
                 
                 // If entities were extracted, display them as tags below the attack name
                 if (entities.length > 0) {
                     attackHtml += `<div class="sub-label">Extracted Entities</div>
                         <div class="entity-list">`;
-                    entities.forEach(e => {
-                        attackHtml += `<span class="entity-tag">${escapeHtml(e)}</span>`;
-                    });
+                    
+                    // Iterate through each entity and create a span tag for it, escaping HTML to prevent XSS    
+                    entities.forEach(e => {attackHtml += `<span class="entity-tag">${escapeHtml(e)}</span>`;});
                     attackHtml += `</div>`;
                 }
+
+                // Update the attack card with the constructed HTML
                 document.getElementById('card-attack').innerHTML = attackHtml;
 
                 // Actions card data rendering
@@ -382,8 +419,10 @@
                             <div class="mod-header">
                                 <span class="mod-name">${label}</span>
                             </div>
+
                             <div class="mod-confidence">${Math.round(data.confidence * 100)}%</div>
                             <div class="mod-tactic">🎯 ${escapeHtml(data.attack_classification || 'Unknown')}</div>
+                            <div class="mod-tactic-explanation">${escapeHtml(tactic_descriptions[data.attack_classification] || tactic_descriptions['Unknown'])}</div>
                             <div class="mod-weight">Fusion weight: ${weight ? (weight * 100).toFixed(2) + '%' : '—'}</div>
                             <div class="mod-summary">${escapeHtml(data.summary || '')}</div>`;
                     // Else keep the cell in inactive state with "No input provided" message
@@ -419,6 +458,61 @@
                     document.getElementById(id).innerHTML = `
                         <div class="card-title">${titles[id]}</div>
                         <div class="placeholder"><span>Analysing…</span></div>`;
+                });
+            }
+
+            // Function to clear all inputs, reset UI state, and clear output results
+            function clearAll() {
+
+                // Reset each file input and its associated UI state to default
+                [
+                    { inputId: 'log-file-input', nameId: 'log-file-name', labelTextId: 'log-file-label-text', dotId: 'dot-text', defaultLabel: 'Click to upload log file', icon: '📄' },
+                    { inputId: 'screenshot-input', nameId: 'screenshot-name', labelTextId: 'screenshot-label-text', dotId: 'dot-vision', defaultLabel: 'Click to upload screenshot', icon: '🖼' },
+                    { inputId: 'voice-input', nameId: 'voice-name', labelTextId: 'voice-label-text', dotId: 'dot-speech', defaultLabel: 'Click to upload voice note', icon: '🎙' },
+                ].forEach(({ inputId, nameId, labelTextId, dotId, defaultLabel, icon }) => {
+                    document.getElementById(inputId).value = '';
+                    document.getElementById(nameId).textContent = '';
+                    document.getElementById(labelTextId).textContent = defaultLabel;
+                    document.getElementById(dotId).classList.remove('active');
+
+                    const label = document.querySelector(`label[for="${inputId}"]`);
+                    label.style.borderColor = '';
+                    label.style.background = '';
+                    label.querySelector('.icon').textContent = icon;
+                });
+
+                // Clear warnings/errors
+                document.getElementById('warnings-area').innerHTML = '';
+
+                // Deactivate output dot indicator and disable PDF download
+                document.getElementById('dot-output').classList.remove('active');
+                document.getElementById('download-pdf-btn').disabled = true;
+                lastTriageResult = null;
+
+                // Reset the three main output panels back to "Awaiting analysis"
+                document.getElementById('card-severity').innerHTML = `
+                    <div class="card-title">Severity Rating</div>
+                    <div class="placeholder"><span>Awaiting analysis</span></div>`;
+                document.getElementById('card-attack').innerHTML = `
+                    <div class="card-title">Attack Name</div>
+                    <div class="placeholder"><span>Awaiting analysis</span></div>`;
+                document.getElementById('card-actions').innerHTML = `
+                    <div class="card-title">Recommended Actions List</div>
+                    <div class="placeholder"><span>Awaiting analysis</span></div>`;
+
+                // Reset modality breakdown cells back to their inactive "No input" state
+                [
+                    { id: 'bd-text', label: 'Breakdown of findings extracted from text file' },
+                    { id: 'bd-vision', label: 'Breakdown of findings extracted from photo' },
+                    { id: 'bd-speech', label: 'Breakdown of findings extracted from voice note' },
+                ].forEach(({ id, label }) => {
+                    const cell = document.getElementById(id);
+                    cell.classList.add('inactive');
+                    cell.innerHTML = `
+                        <div class="mod-header">
+                            <span class="mod-name">${label}</span>
+                        </div>
+                        <div class="placeholder" style="min-height:80px;"><span>No input</span></div>`;
                 });
             }
 
