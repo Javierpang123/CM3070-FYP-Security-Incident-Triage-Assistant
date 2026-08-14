@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1134_token_manipulation",
+  "attack_class": "Privilege Escalation",
+  "mitre_id": "T1134",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "security_4624_4673_token_manip.evtx"
+}

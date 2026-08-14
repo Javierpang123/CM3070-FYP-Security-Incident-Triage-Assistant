@@ -1,0 +1,1 @@
+ A C O M object registration associated with Firefox was hijacked to point to an attacker-controlled D L L. This provides persistence that triggers whenever the associated C O M interface is invoked.

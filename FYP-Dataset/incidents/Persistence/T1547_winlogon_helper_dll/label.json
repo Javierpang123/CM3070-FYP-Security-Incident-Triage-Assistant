@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1547_winlogon_helper_dll",
+  "attack_class": "Persistence",
+  "mitre_id": "T1547",
+  "mitre_sub": "T1547.004",
+  "severity": 4,
+  "source_evtx": "sysmon_13_1_persistence_via_winlogon_shell.evtx"
+}

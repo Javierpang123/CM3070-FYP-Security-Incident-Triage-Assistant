@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1136_account_manipulation",
+  "attack_class": "Persistence",
+  "mitre_id": "T1136",
+  "mitre_sub": "T1136.001",
+  "severity": 4,
+  "source_evtx": "sysmon_local_account_creation_and_added_admingroup_12_13.evtx"
+}

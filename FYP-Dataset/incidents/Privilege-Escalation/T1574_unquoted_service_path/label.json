@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1574_unquoted_service_path",
+  "attack_class": "Privilege Escalation",
+  "mitre_id": "T1574",
+  "mitre_sub": "T1574.009",
+  "severity": 3,
+  "source_evtx": "privesc_unquoted_svc_sysmon_1_11.evtx"
+}

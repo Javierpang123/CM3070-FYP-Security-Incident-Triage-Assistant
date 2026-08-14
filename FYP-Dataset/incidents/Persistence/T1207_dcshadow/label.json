@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1207_dcshadow",
+  "attack_class": "Persistence",
+  "mitre_id": "T1207",
+  "mitre_sub": null,
+  "severity": 5,
+  "source_evtx": "persistence_security_dcshadow_4742.evtx"
+}

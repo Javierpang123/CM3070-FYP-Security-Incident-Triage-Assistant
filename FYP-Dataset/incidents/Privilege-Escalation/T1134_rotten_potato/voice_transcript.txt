@@ -1,0 +1,1 @@
+ A low privileged web shell process spawned a child process running as SYSTEM shortly after a local relay was observed, consistent with the Rotten Potato privilege escalation technique.

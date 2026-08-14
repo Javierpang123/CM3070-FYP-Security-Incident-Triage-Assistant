@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1546_com_hijacking",
+  "attack_class": "Persistence",
+  "mitre_id": "T1546",
+  "mitre_sub": "T1546.015",
+  "severity": 3,
+  "source_evtx": "persist_firefox_comhijack_sysmon_11_13_7_1.evtx"
+}

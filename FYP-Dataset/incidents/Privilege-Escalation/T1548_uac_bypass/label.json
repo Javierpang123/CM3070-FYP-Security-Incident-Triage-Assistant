@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1548_uac_bypass",
+  "attack_class": "Privilege Escalation",
+  "mitre_id": "T1548",
+  "mitre_sub": "T1548.002",
+  "severity": 4,
+  "source_evtx": "Sysmon_UACME_22.evtx"
+}

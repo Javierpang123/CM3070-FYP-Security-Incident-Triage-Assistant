@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1197_bits_jobs",
+  "attack_class": "Persistence",
+  "mitre_id": "T1197",
+  "mitre_sub": null,
+  "severity": 3,
+  "source_evtx": "persist_bitsadmin_Microsoft-Windows-Bits-Client-Operational.evtx"
+}

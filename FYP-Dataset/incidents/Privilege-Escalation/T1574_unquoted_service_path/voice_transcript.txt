@@ -1,0 +1,1 @@
+ A service was observed with an unquoted binary path containing a space, allowing a planted executable earlier in the path to be launched with the service's elevated privileges.

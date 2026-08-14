@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1134_winrm_privesc",
+  "attack_class": "Privilege Escalation",
+  "mitre_id": "T1134",
+  "mitre_sub": null,
+  "severity": 3,
+  "source_evtx": "RogueWinRM.evtx"
+}

@@ -1,0 +1,1 @@
+ A computer account object was modified in a manner consistent with the DC Shadow attack, temporarily registering a rogue domain controller to push unauthorized directory changes. Critical priority.

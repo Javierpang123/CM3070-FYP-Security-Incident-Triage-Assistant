@@ -1,0 +1,1 @@
+A process was granted a sensitive privilege immediately followed by a token related access event. This sequence is consistent with token impersonation for privilege escalation.

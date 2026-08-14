@@ -1,0 +1,1 @@
+ A registry value controlling the Winlogon shell was modified to point to an additional binary. This grants the attacker persistence that survives a full user log on cycle.

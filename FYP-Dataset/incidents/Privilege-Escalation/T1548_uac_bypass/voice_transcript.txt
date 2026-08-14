@@ -1,0 +1,1 @@
+ A known auto-elevating Windows binary was invoked in a sequence consistent with the U A C M E bypass technique, allowing code execution without a U A C consent prompt.

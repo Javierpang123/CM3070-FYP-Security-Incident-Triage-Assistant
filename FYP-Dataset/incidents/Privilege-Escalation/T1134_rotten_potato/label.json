@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1134_rotten_potato",
+  "attack_class": "Privilege Escalation",
+  "mitre_id": "T1134",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "privesc_rotten_potato_from_webshell_metasploit_sysmon_1_8_3.evtx"
+}

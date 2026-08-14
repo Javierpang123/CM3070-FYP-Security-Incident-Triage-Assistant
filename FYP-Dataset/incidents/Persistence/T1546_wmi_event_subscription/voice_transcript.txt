@@ -1,0 +1,1 @@
+A consumer execute a command line whenever a specific system event occurs. This is a stealthy persistence mechanism that survives reboots.

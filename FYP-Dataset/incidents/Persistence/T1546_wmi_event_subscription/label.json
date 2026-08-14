@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1546_wmi_event_subscription",
+  "attack_class": "Persistence",
+  "mitre_id": "T1546",
+  "mitre_sub": "T1546.003",
+  "severity": 4,
+  "source_evtx": "sysmon_20_21_1_CommandLineEventConsumer.evtx"
+}

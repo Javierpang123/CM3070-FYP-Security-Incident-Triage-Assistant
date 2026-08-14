@@ -1,0 +1,1 @@
+ A new local account was created and immediately added to the local administrators group by a non-administrative account at an unusual hour. This does not match the baseline for this host.

@@ -1,0 +1,1 @@
+ A rogue Win R M listener was started briefly on the host and then torn down, consistent with an exploit that abuses the WinRM service startup sequence to gain SYSTEM privileges.
