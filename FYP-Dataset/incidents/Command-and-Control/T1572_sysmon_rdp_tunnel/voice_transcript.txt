@@ -1,0 +1,1 @@
+Sysmon network connection events show RDP traffic tunneled through an unexpected process. The parent process does not normally initiate remote desktop connections. Flagging as possible C2 channel.

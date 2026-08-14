@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1110_kerberos_pwd_spray",
+  "attack_class": "Credential Access",
+  "mitre_id": "T1110",
+  "mitre_sub": "T1110.003",
+  "severity": 3,
+  "source_evtx": "kerberos_pwd_spray_4771.evtx"
+}

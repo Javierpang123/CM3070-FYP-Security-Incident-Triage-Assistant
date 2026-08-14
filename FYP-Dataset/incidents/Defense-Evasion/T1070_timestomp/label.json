@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1070_timestomp",
+  "attack_class": "Defense Evasion",
+  "mitre_id": "T1070",
+  "mitre_sub": "T1070.006",
+  "severity": 3,
+  "source_evtx": "sysmon_2_11_evasion_timestomp_MACE.evtx"
+}

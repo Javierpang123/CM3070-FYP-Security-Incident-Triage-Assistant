@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1112_registry_tampering",
+  "attack_class": "Defense Evasion",
+  "mitre_id": "T1112",
+  "mitre_sub": null,
+  "severity": 3,
+  "source_evtx": "sysmon_13_rdp_settings_tampering.evtx"
+}

@@ -1,0 +1,1 @@
+ The Windows Security event log was cleared on the target host. Log size dropped to zero entries immediately following the clearing action. This is a strong indicator of evasion activity.

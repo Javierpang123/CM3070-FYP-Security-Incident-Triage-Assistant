@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1070_security_log_cleared",
+  "attack_class": "Defense Evasion",
+  "mitre_id": "T1070",
+  "mitre_sub": "T1070.001",
+  "severity": 4,
+  "source_evtx": "DE_1102_security_log_cleared.evtx"
+}

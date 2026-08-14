@@ -1,0 +1,1 @@
+An anonymous logon was followed immediately by a computer account password reset against the domain controller. This sequence matches the Zerologon exploit chain, CVE-2020-1472. Critical priority.

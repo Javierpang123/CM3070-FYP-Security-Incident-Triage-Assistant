@@ -1,0 +1,1 @@
+A process was observed requesting memory access to lsass.exe followed by a file creation event consistent with a memory dump. No legitimate administrative task explains this behavior.

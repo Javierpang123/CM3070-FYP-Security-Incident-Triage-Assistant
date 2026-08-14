@@ -1,0 +1,1 @@
+High volume of outbound RDP-tunneled traffic detected from the target host to an external endpoint. The tunneling pattern does not match any approved remote access tool. Possible command and control channel.

@@ -1,0 +1,1 @@
+ User Account Control was disabled via a registry modification on the target host. This lowers the barrier for subsequent privilege escalation attempts.

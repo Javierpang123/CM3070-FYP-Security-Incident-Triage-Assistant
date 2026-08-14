@@ -1,0 +1,8 @@
+﻿{
+  "incident_id": "T1098_dsrm_password_change",
+  "attack_class": "Credential Access",
+  "mitre_id": "T1098",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "4794_DSRM_password_change_t1098.evtx"
+}

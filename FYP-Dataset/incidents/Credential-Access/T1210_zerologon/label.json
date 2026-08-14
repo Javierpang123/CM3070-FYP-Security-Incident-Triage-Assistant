@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1210_zerologon",
+  "attack_class": "Credential Access",
+  "mitre_id": "T1210",
+  "mitre_sub": null,
+  "severity": 5,
+  "source_evtx": "Zerologon_VoidSec_CVE-2020-1472_4626_LT3_Anonym_follwedby_4742_DC_Anony_DC.evtx"
+}

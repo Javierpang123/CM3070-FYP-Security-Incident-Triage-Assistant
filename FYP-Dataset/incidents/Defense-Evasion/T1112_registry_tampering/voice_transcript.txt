@@ -1,0 +1,1 @@
+ Registry values controlling RDP security settings were modified outside of a scheduled change window. The modification weakens authentication requirements for remote desktop access.

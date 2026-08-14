@@ -1,0 +1,1 @@
+ An un managed PowerShell payload was injected into a legitimate process via reflective loading. No corresponding PowerShell console process was observed, consistent with in-memory evasion.

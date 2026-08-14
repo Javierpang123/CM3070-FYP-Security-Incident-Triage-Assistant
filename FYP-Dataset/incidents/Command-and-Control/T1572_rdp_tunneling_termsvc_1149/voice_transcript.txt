@@ -1,0 +1,1 @@
+Terminal Services logs show a sustained remote connection consistent with protocol tunneling. Event volume is significantly above baseline for this host. Possible beaconing over RDP.

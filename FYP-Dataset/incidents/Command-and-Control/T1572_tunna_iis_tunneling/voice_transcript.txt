@@ -1,0 +1,1 @@
+IIS worker process is observed proxying RDP and SMB traffic to an external host, consistent with the Tunna tunneling toolkit. This is not expected behavior for a web server process.

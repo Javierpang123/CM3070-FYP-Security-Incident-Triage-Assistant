@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1555_keepass_credump",
+  "attack_class": "Credential Access",
+  "mitre_id": "T1555",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "CA_keefarce_keepass_credump.evtx"
+}

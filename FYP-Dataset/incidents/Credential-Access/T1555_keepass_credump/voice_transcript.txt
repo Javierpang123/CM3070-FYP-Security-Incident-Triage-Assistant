@@ -1,0 +1,1 @@
+A process injected into the running KeePass password manager and extracted decrypted credential data shortly afterward. This matches known behavior of the KeeFarce credential extraction tool.

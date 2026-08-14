@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1003_lsass_memdump",
+  "attack_class": "Credential Access",
+  "mitre_id": "T1003",
+  "mitre_sub": "T1003.001",
+  "severity": 4,
+  "source_evtx": "sysmon_10_11_lsass_memdump.evtx"
+}

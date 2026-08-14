@@ -1,0 +1,1 @@
+Repeated logon events correlate with an active RDP tunnel to an unrecognized external address. Session duration and timing suggest automated, non-interactive use. Recommend isolating the host.

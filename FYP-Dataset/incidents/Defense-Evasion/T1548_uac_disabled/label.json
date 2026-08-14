@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1548_uac_disabled",
+  "attack_class": "Defense Evasion",
+  "mitre_id": "T1548",
+  "mitre_sub": "T1548.002",
+  "severity": 3,
+  "source_evtx": "DE_UAC_Disabled_Sysmon_12_13.evtx"
+}

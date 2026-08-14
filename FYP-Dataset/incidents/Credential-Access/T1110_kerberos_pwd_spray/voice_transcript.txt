@@ -1,0 +1,1 @@
+Multiple Kerberos pre-authentication failures observed across several user accounts within a short window. Pattern is consistent with a password spraying attempt rather than a single account lockout.

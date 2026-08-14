@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1562_execpolicy_changed",
+  "attack_class": "Defense Evasion",
+  "mitre_id": "T1562",
+  "mitre_sub": "T1562.001",
+  "severity": 3,
+  "source_evtx": "de_powershell_execpolicy_changed_sysmon_13.evtx"
+}

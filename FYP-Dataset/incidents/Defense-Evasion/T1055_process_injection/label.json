@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1055_process_injection",
+  "attack_class": "Defense Evasion",
+  "mitre_id": "T1055",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "de_unmanagedpowershell_psinject_sysmon_7_8_10.evtx"
+}

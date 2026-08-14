@@ -1,0 +1,1 @@
+PowerShell process spawned with command-line arguments consistent with the Mimikatz credential dumping tool. Memory access patterns targeting LSASS were observed shortly after. Recommend immediate isolation.

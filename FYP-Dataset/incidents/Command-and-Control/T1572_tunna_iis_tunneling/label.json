@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1572_tunna_iis_tunneling",
+  "attack_class": "Command and Control",
+  "mitre_id": "T1572",
+  "mitre_sub": null,
+  "severity": 5,
+  "source_evtx": "tunna_iis_rdp_smb_tunneling_sysmon_3.evtx"
+}

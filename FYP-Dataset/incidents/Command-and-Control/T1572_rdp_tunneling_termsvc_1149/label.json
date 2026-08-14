@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1572_rdp_tunneling_termsvc_1149",
+  "attack_class": "Command and Control",
+  "mitre_id": "T1572",
+  "mitre_sub": null,
+  "severity": 5,
+  "source_evtx": "DE_RDP_Tunneling_TerminalServices-RemoteConnectionManagerOperational_1149.evtx"
+}

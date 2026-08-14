@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1003_mimikatz_powershell",
+  "attack_class": "Credential Access",
+  "mitre_id": "T1003",
+  "mitre_sub": "T1003.001",
+  "severity": 4,
+  "source_evtx": "babyshark_mimikatz_powershell.evtx"
+}

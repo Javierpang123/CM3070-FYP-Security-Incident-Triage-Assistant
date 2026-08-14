@@ -1,0 +1,1 @@
+ File time stamps were modified to match a system file, a technique known as time stomping. This is commonly used to blend malicious files in with legitimate system activity.

@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1572_sysmon_rdp_tunnel",
+  "attack_class": "Command and Control",
+  "mitre_id": "T1572",
+  "mitre_sub": null,
+  "severity": 5,
+  "source_evtx": "DE_sysmon-3-rdp-tun.evtx"
+}
