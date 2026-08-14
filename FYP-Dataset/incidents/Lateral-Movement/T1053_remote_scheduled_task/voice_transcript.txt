@@ -1,0 +1,1 @@
+ A scheduled task was created remotely on the target host via the A T S V C interface. Remote task creation of this kind is commonly used to achieve lateral movement and execution. 

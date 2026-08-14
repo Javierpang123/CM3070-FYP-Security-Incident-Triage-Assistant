@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1053_scheduled_task_creation",
+  "attack_class": "Execution",
+  "mitre_id": "T1053",
+  "mitre_sub": "T1053.005",
+  "severity": 3,
+  "source_evtx": "temp_scheduled_task_4698_4699.evtx"
+}

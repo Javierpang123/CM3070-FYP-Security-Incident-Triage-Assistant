@@ -1,0 +1,1 @@
+ Local group membership was enumerated on the target host outside of a routine audit window.  The enumerating account does not typically perform this kind of query.

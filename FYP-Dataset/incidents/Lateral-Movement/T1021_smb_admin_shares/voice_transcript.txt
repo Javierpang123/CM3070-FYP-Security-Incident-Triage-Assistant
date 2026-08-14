@@ -1,0 +1,1 @@
+ A file was uploaded to an administrative S M B share on the target host and executed shortly afterward. This upload-and-execute pattern is consistent with S M B based lateral movement.

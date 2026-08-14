@@ -1,0 +1,1 @@
+ A reflective injection was observed targeting notepad.exe, consistent with a Meter preter  payload. The target process shows no legitimate reason for the injected memory region.

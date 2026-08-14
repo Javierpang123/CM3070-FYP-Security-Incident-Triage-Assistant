@@ -1,0 +1,1 @@
+ A tool was used to enumerate currently and recently logged on users across the network.  This is commonly used by an attacker to identify high value targets for follow-on activity.

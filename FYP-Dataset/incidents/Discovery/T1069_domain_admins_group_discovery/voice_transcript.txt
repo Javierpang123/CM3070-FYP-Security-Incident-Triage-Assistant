@@ -1,0 +1,1 @@
+ A handle was opened against the Domain Admins security group object shortly before an enumeration query. This behavior is consistent with reconnaissance ahead of a privilege escalation attempt.

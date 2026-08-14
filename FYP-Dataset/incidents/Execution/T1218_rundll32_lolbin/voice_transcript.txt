@@ -1,0 +1,1 @@
+ Rund l l 3 2 was used to invoke the FileProtocolHandler export to open a URL, a known technique for masking network activity behind a trusted binary.

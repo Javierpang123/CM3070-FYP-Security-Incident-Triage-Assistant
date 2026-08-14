@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1057_process_discovery",
+  "attack_class": "Discovery",
+  "mitre_id": "T1057",
+  "mitre_sub": null,
+  "severity": 2,
+  "source_evtx": "discovery_meterpreter_ps_cmd_process_listing_sysmon_10.evtx"
+}

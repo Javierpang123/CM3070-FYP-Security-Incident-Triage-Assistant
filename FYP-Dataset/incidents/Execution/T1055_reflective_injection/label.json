@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1055_reflective_injection",
+  "attack_class": "Execution",
+  "mitre_id": "T1055",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "Sysmon_meterpreter_ReflectivePEInjection_to_notepad_.evtx"
+}

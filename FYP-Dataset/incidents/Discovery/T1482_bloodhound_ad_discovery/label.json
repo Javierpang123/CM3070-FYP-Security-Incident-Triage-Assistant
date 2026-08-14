@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1482_bloodhound_ad_discovery",
+  "attack_class": "Discovery",
+  "mitre_id": "T1482",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "discovery_bloodhound.evtx"
+}

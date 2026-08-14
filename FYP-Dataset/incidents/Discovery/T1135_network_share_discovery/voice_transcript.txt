@@ -1,0 +1,1 @@
+ Sequential connection attempts were made to multiple administrative shares across the network from a single host. This pattern is consistent with automated share enumeration.

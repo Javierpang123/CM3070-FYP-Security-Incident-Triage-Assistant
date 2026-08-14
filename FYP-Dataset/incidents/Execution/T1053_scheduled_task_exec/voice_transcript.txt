@@ -1,0 +1,1 @@
+ A scheduled task executed a binary from a volume shadow copy path rather than a standard installation directory. This is an unusual execution source that warrants review.

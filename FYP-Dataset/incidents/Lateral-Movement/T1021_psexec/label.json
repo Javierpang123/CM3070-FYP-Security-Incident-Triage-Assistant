@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1021_psexec",
+  "attack_class": "Lateral Movement",
+  "mitre_id": "T1021",
+  "mitre_sub": "T1021.002",
+  "severity": 4,
+  "source_evtx": "LM_sysmon_psexec_smb_meterpreter.evtx"
+}

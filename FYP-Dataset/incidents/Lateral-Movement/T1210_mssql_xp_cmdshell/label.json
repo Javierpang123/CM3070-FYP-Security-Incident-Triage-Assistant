@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1210_mssql_xp_cmdshell",
+  "attack_class": "Lateral Movement",
+  "mitre_id": "T1210",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "LM_xp_cmdshell_MSSQL_Events.evtx"
+}

@@ -1,0 +1,1 @@
+ L D A P query volume from a single host spiked sharply, consistent with the Blood Hound Active  Directory reconnaissance tool. This activity often precedes a targeted lateral movement attempt.

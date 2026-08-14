@@ -1,0 +1,1 @@
+ W M I C was used to process an X S L stylesheet retrieved from an internet-facing URL. This technique allows arbitrary script execution while evading application whitelisting.

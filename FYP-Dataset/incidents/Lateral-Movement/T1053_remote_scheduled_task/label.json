@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1053_remote_scheduled_task",
+  "attack_class": "Lateral Movement",
+  "mitre_id": "T1053",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "LM_ScheduledTask_ATSVC_target_host.evtx"
+}

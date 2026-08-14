@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1135_network_share_discovery",
+  "attack_class": "Discovery",
+  "mitre_id": "T1135",
+  "mitre_sub": null,
+  "severity": 2,
+  "source_evtx": "discovery_enum_shares_target_sysmon_3_18.evtx"
+}

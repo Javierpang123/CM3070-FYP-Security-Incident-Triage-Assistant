@@ -1,0 +1,1 @@
+ M s i exec was used to install a package fetched directly from a remote URL rather than a local or approved software repository. This is a common technique for delivering a malicious payload.

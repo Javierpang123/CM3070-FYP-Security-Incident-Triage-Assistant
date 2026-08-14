@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1218_rundll32_lolbin",
+  "attack_class": "Execution",
+  "mitre_id": "T1218",
+  "mitre_sub": "T1218.011",
+  "severity": 3,
+  "source_evtx": "exec_sysmon_1_11_lolbin_rundll32_openurl_FileProtocolHandler.evtx"
+}

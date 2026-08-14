@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1021_sharprdp",
+  "attack_class": "Lateral Movement",
+  "mitre_id": "T1021",
+  "mitre_sub": "T1021.001",
+  "severity": 4,
+  "source_evtx": "LM_sysmon_3_12_13_1_SharpRDP.evtx"
+}

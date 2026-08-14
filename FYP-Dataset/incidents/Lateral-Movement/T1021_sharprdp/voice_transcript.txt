@@ -1,0 +1,1 @@
+ An R D P connection was established programmatically without the usual interactive log on prompt sequence, consistent with the Sharp R D P lateral movement tool.

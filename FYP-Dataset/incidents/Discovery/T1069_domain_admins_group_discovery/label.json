@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1069_domain_admins_group_discovery",
+  "attack_class": "Discovery",
+  "mitre_id": "T1069",
+  "mitre_sub": "T1069.002",
+  "severity": 3,
+  "source_evtx": "dicovery_4661_net_group_domain_admins_target.evtx"
+}

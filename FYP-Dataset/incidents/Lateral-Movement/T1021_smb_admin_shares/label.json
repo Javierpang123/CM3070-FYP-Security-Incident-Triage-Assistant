@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1021_smb_admin_shares",
+  "attack_class": "Lateral Movement",
+  "mitre_id": "T1021",
+  "mitre_sub": "T1021.002",
+  "severity": 4,
+  "source_evtx": "smbmap_upload_exec_sysmon.evtx"
+}

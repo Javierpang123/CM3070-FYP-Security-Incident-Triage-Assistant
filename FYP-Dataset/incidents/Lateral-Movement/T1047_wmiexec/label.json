@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1047_wmiexec",
+  "attack_class": "Lateral Movement",
+  "mitre_id": "T1047",
+  "mitre_sub": null,
+  "severity": 4,
+  "source_evtx": "LM_wmiexec_impacket_sysmon_whoami.evtx"
+}

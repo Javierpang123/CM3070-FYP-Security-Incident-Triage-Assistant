@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1069_local_group_discovery",
+  "attack_class": "Discovery",
+  "mitre_id": "T1069",
+  "mitre_sub": "T1069.001",
+  "severity": 2,
+  "source_evtx": "discovery_local_user_or_group_windows_security_4799_4798.evtx"
+}

@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1220_xsl_script_processing",
+  "attack_class": "Execution",
+  "mitre_id": "T1220",
+  "mitre_sub": null,
+  "severity": 3,
+  "source_evtx": "exec_wmic_xsl_internet_sysmon_3_1_11.evtx"
+}

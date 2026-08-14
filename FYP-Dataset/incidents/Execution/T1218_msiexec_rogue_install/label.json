@@ -1,0 +1,8 @@
+{
+  "incident_id": "T1218_msiexec_rogue_install",
+  "attack_class": "Execution",
+  "mitre_id": "T1218",
+  "mitre_sub": "T1218.007",
+  "severity": 4,
+  "source_evtx": "rogue_msi_url_1040_1042.evtx"
+}

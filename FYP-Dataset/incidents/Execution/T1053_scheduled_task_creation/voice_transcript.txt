@@ -1,0 +1,1 @@
+ A new scheduled task was created and registered on the target host outside of a maintenance window. The task action points to a binary in a non-standard location.

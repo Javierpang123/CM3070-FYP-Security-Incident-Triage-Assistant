@@ -1,0 +1,1 @@
+ A WMI process call was used to remotely execute a whoami command on the target host, consistent with the wmiexec tool from the Impacket toolkit.

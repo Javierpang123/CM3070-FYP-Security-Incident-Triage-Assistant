@@ -1,0 +1,1 @@
+ The xp_cmdshell stored procedure was enabled and invoked on the target M S S Q L server, allowing operating system command execution through the database service.
