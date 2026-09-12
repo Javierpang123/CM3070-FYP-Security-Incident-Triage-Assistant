@@ -37,12 +37,15 @@ Each incident produces:
 - Python 3
 - Flask (API server and frontend serving)
 - Ollama (local LLM runtime)
+
 **AI Models**
 - Mistral 7B via Ollama (log and text analysis)
 - BLIP + Tesseract OCR (screenshot and visual content extraction)
 - Whisper (analyst voice note transcription)
+
 **Orchestration**
 - Custom late fusion orchestrator module 
+
 **Frontend**
 - Single-page Flask-rendered UI (no React, no database)
 - Three input panels: text area, image drop zone, audio uploader
