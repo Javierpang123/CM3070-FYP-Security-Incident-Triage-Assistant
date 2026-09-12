@@ -1,8 +1,8 @@
 # Flashpoint - Multimodal Security Incident Triage Assistant
  
-Flashpoint is my final year project for CM3070 at the University of London. The idea came from a real gap I noticed: small IT teams at SMBs often have lightweight SIEM tools like ELK Stack, Wazuh, or Graylog that surface alerts just fine — but there's no automated layer to actually triage them. Someone still has to read through logs, interpret dashboard screenshots, and piece everything together under pressure. Flashpoint sits in that gap.
+Flashpoint is my final year project for CM3070 at the University of London. The idea came from a real gap I noticed: small IT teams at SMBs often have lightweight SIEM tools that surface alerts just fine, but there's no automated layer to actually triage them. Someone still has to read through logs, interpret dashboard screenshots, and piece everything together under pressure. Flashpoint sits in that gap.
  
-The system orchestrates three pre-trained AI models across different input modalities which are log text, screenshots, and analyst voice notes and then fuses their outputs into a single structured triage report. The core question driving the project is whether combining those three modalities produces more accurate and trustworthy triage than relying on any one of them alone.
+The system orchestrates three pre-trained AI models across different input modalities, which are log text, screenshots, and analyst voice notes and then fuses their outputs into a single structured triage report. The core question driving the project is whether combining those three modalities produces more accurate and trustworthy triage than relying on any one of them alone. The full evaluation, including an ablation study and a self-audit of dataset bias, is documented in the final report.
  
 Everything runs fully offline by design. No data leaves the machine, which matters a lot when you're dealing with sensitive security incidents.
  
