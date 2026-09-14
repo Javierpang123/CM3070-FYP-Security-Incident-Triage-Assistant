@@ -1,8 +1,6 @@
 # Word Error Rate (WER) evaluation for Flashpoint's Whisper wrapper (eval item 2).
-
 """
-Compares Whisper's transcription (via analyse_audio()) against each
-incident's ground-truth voice_transcript.txt
+Compares Whisper's transcription against each incident's ground-truth voice_transcript.txt
 """
 
 import argparse

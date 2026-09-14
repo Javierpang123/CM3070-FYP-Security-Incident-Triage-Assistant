@@ -1,10 +1,6 @@
-# Per-modality evaluation runner for Flashpoint (eval item 1).
-
 """
-Runs all incidents in the dataset through the text, vision, and speech
-model wrappers independently (single-modality only - no fusion), and
-records each modality's predicted attack_classification against
-label.json ground truth. 
+Runs all incidents in the dataset through the text, vision, and speech model wrappers independently
+and records each modality's predicted attack_classification against label.json ground truth. 
 """
 
 import argparse
