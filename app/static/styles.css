@@ -1,10 +1,12 @@
 *, *::before, *::after {box-sizing: border-box; margin: 0; padding: 0;}
 
+/* Root variables for font use in our app */
 :root {
     --font: 'Segoe UI', system-ui, sans-serif;
     --mono-font: 'Consolas', 'Courier New', monospace;
 }
 
+/* Main body styling */
 body {
     background: #0d1117;
     color: white;
@@ -40,6 +42,7 @@ body {
     padding: 18px;
 }
 
+/* Card title styling */
 .card-title {
     font-size: 11px;
     font-weight: 600;
@@ -52,6 +55,7 @@ body {
     gap: 8px;
 }
 
+/* Dot indicator styling */
 .dot {
     width: 8px;
     height: 8px;
@@ -60,13 +64,16 @@ body {
     flex-shrink: 0;
 }
 
+/* Dot indicator active state styling */
 .dot.active {
     background: green;
 }
 
 /* ------------------------------------------------------------------ */
-/* Row 1 — Three input panels                                   
+/* Row 1 - Three input panels                                   
 /* ------------------------------------------------------------------ */
+
+/* Input row layout */
 .input-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -74,6 +81,7 @@ body {
     margin-bottom: 14px;
 }
 
+/* Text styling for input panels */
 textarea {
     width: 100%;
     background: #21262d;
@@ -93,10 +101,12 @@ textarea:focus {
     border-color: salmon;
 }
 
+/* File input wrapper styling */
 .file-input-wrapper {
     position: relative;
 }
 
+/* File input label styling */
 .file-label {
     display: flex;
     flex-direction: column;
@@ -115,15 +125,18 @@ textarea:focus {
     min-height: 140px;
 }
 
+/* File input labell hover state styling */
 .file-label:hover {
     border-color: salmon;
     background: #1c2128;
 }
 
+/* File input label icon styling */
 .file-label .icon {
     font-size: 28px;
 }
 
+/* File input styling to make it invisible but still can click */
 input[type="file"] {
     position: absolute;
     inset: 0;
@@ -133,6 +146,7 @@ input[type="file"] {
     height: 100%;
 }
 
+/* File name display text styling */
 .file-name {
     font-size: 11px;
     color: green;
@@ -142,10 +156,19 @@ input[type="file"] {
 }
 
 /* ------------------------------------------------------------------ */
-/* Run button                                                    
+/* Run and reset button styling                                                    
 /* ------------------------------------------------------------------ */
+
+/* Button row layout */
+.button-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* Run button styling */
 #submit-btn {
-    width: 100%;
+    flex: 1;
     padding: 12px;
     background: salmon;
     color: #0d1117;
@@ -156,16 +179,47 @@ input[type="file"] {
     cursor: pointer;
     letter-spacing: 0.3px;
     transition: opacity 0.15s;
-    margin-bottom: 20px;
 }
 
+/* Run button hover and disabled states */
 #submit-btn:hover {
     opacity: 0.85;
 }
 
+/* Disabled state styling for run button */
 #submit-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+/* Clear all button styling */
+.reset-btn {
+    background: transparent;
+    border: 1px solid #888;
+    color: #ccc;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* Clear all button hover state */
+.reset-btn:hover {
+    background: #333;
+    color: #fff;
+}
+
+/* Tactic explanation styling */
+.tactic-explanation,
+.mod-tactic-explanation {
+    font-size: 12px;
+    color: #999;
+    margin-top: 6px;
+    margin-bottom: 14px;
+    line-height: 1.4;
 }
 
 /* ------------------------------------------------------------------ */
@@ -181,22 +235,24 @@ input[type="file"] {
     gap: 8px;
 }
 
+/* Dot indicator styling for section heading */
 .section-heading .dot {
     background: #30363d;
 }
 
+/* Dot indicator active state styling for section heading */
 .section-heading .dot.active {
     background: green;
 }
 
-/* Layout for the Analysis Output Summary heading + download button */
+/* Layout for the Analysis Output Summary heading abd download button */
 .section-heading-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-/* PDF download button */
+/* PDF download button styling */
 .download-btn {
     background: transparent;
     border: 1px solid #ff6b6b;
@@ -209,21 +265,21 @@ input[type="file"] {
     transition: background 0.15s ease, color 0.15s ease;
 }
 
+/* PDF download button hover state */
 .download-btn:hover:not(:disabled) {
     background: #ff6b6b;
     color: #0a0a0a;
 }
 
+/* Disabled state styling for PDF download button */
 .download-btn:disabled {
     border-color: #444;
     color: #666;
     cursor: not-allowed;
 }
 
-
-
 /* ------------------------------------------------------------------ */
-/* Row 2 — Main output: severity | attack | actions                    */
+/* Row 2 - Main output: severity | attack | actions                    */
 /* ------------------------------------------------------------------ */
 .output-row {
     display: grid;
@@ -232,7 +288,7 @@ input[type="file"] {
     margin-bottom: 16px;
 }
 
-/* Severity card */
+/* Severity card styling */
 .severity-number {
     font-size: 64px;
     font-weight: 800;
@@ -240,18 +296,21 @@ input[type="file"] {
     margin-bottom: 4px;
 }
 
+/* Severity slash styling that separates the severity number from the label */
 .severity-slash {
     font-size: 28px;
     font-weight: 400;
     color: gray;
 }
 
+/* Severity label styling */
 .severity-label-text {
     font-size: 12px;
     color: gray;
     margin-top: 8px;
 }
 
+/* Severity color coding based on severity level */
 .sev-1 {
     color: green;
 }
@@ -272,10 +331,12 @@ input[type="file"] {
     color: red;
 }
 
+/* Confidence bar styling */
 .confidence-bar-wrap {
     margin-top: 14px;
 }
 
+/* Confidence bar label styling */
 .confidence-bar-wrap .conf-labels {
     display: flex;
     justify-content: space-between;
@@ -284,6 +345,7 @@ input[type="file"] {
     margin-bottom: 5px;
 }
 
+/* Confidence bar container styling */
 .confidence-bar {
     height: 6px;
     background: #21262d;
@@ -291,6 +353,7 @@ input[type="file"] {
     overflow: hidden;
 }
 
+/* Confidence bar fill styling like gradient and transition effect */
 .confidence-fill {
     height: 100%;
     border-radius: 4px;
@@ -298,7 +361,7 @@ input[type="file"] {
     transition: width 0.4s ease;
 }
 
-/* Attack card */
+/* Attack classification card styling */
 .attack-name {
     font-size: 18px;
     font-weight: 700;
@@ -307,6 +370,7 @@ input[type="file"] {
     line-height: 1.3;
 }
 
+/* MITRE ATT&CK chip styling */
 .mitre-chip {
     display: inline-block;
     background: navy;
@@ -318,6 +382,7 @@ input[type="file"] {
     margin-bottom: 14px;
 }
 
+/* Entity list styling for displaying entities in a flex layout */
 .entity-list {
     display: flex;
     flex-wrap: wrap;
@@ -325,6 +390,7 @@ input[type="file"] {
     margin-top: 10px;
 }
 
+/* Entity tag styling for individual entities */
 .entity-tag {
     background: #21262d;
     border: 1px solid #30363d;
@@ -335,6 +401,7 @@ input[type="file"] {
     color: gray;
 }
 
+/* Sub-label styling for small text things */
 .sub-label {
     font-size: 10px;
     font-weight: 600;
@@ -344,12 +411,13 @@ input[type="file"] {
     margin-bottom: 6px;
 }
 
-/* Actions card */
+/* Recommendations action card styling */
 .actions-list {
     list-style: none;
     counter-reset: actions;
 }
 
+/* Recommendations action item styling for individual actions in the list */
 .actions-list li {
     counter-increment: actions;
     padding: 8px 10px 8px 14px;
@@ -363,6 +431,7 @@ input[type="file"] {
     gap: 8px;
 }
 
+/* Recommendations action item number styling */
 .actions-list li::before {
     content: counter(actions) ".";
     color: salmon;
@@ -373,12 +442,15 @@ input[type="file"] {
 /* ------------------------------------------------------------------ */
 /* Row 3 — Modality breakdown                                           */
 /* ------------------------------------------------------------------ */
+
+/* Modality breakdown row layout */
 .breakdown-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
 }
 
+/* Modality breakdown cell styling */
 .breakdown-cell {
     background: #161b22;
     border: 1px solid #30363d;
@@ -386,10 +458,12 @@ input[type="file"] {
     padding: 16px;
 }
 
+/* Modality breakdown cell inactive state styling */
 .breakdown-cell.inactive {
     opacity: 0.35;
 }
 
+/* Modality breakdown cell header layout */
 .mod-header {
     display: flex;
     align-items: center;
@@ -397,10 +471,12 @@ input[type="file"] {
     margin-bottom: 12px;
 }
 
+/* Modality breakdown cell icon styling */
 .mod-icon {
     font-size: 18px;
 }
 
+/* Modality breakdown cell name styling */
 .mod-name {
     font-size: 11px;
     font-weight: 700;
@@ -410,6 +486,7 @@ input[type="file"] {
     color: gray;
 }
 
+/* Modality breakdown cell confidence number styling */
 .mod-confidence {
     font-size: 26px;
     font-weight: 700;
@@ -417,6 +494,7 @@ input[type="file"] {
     margin-bottom: 4px;
 }
 
+/* Modality breakdown cell tactic text styling */
 .mod-tactic {
     font-size: 11px;
     color: gray;
@@ -426,11 +504,13 @@ input[type="file"] {
     text-overflow: ellipsis;
 }
 
+/* Modality breakdown cell weight text styling */
 .mod-weight {
     font-size: 11px;
     color: yellow;
 }
 
+/* Modality breakdown cell summary text styling */
 .mod-summary {
     font-size: 11px;
     color: gray;
@@ -454,11 +534,13 @@ input[type="file"] {
     gap: 8px;
 }
 
+/* Placeholder icon styling */
 .placeholder .icon {
     font-size: 28px;
     opacity: 0.3;
 }
 
+/* Error box text styling */
 .error-box {
     background: #2e1414;
     border: 1px solid red;
@@ -468,6 +550,7 @@ input[type="file"] {
     font-size: 12px;
 }
 
+/* Warning box text styling */
 .warning-box {
     background: #2e2a14;
     border: 1px solid yellow;
@@ -478,6 +561,7 @@ input[type="file"] {
     margin-bottom: 8px;
 }
 
+/* Spinner styling for loading state */
 .spinner {
     display: inline-block;
     width: 14px;
@@ -490,6 +574,7 @@ input[type="file"] {
     margin-right: 6px;
 }
 
+/* Spinner animation keyframes for rotation */
 @keyframes spin {
     to {
         transform: rotate(360deg);
