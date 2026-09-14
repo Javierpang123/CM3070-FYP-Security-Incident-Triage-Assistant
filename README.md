@@ -50,3 +50,49 @@ Each incident produces:
 - Single-page Flask-rendered UI (no React, no database)
 - Three input panels: text area, image drop zone, audio uploader
 - One structured output panel with downloadable PDF export
+
+## Getting Started (Local Setup)
+
+Flashpoint runs entirely on your own machine and nothing is called at inference time over the network. The steps below only require internet access for the initial one-time setup (installing dependencies and downloading model weights).
+
+### 1. Prerequisites
+- **Python 3.10+**
+- **[Ollama](https://ollama.com/download)** installed and running locally
+- **[Tesseract OCR](https://github.com/tesseract-ocr/tesseract)**  installed as a system binary (not just a Python package)
+
+
+### 2. Clone the repository
+```bash
+git clone https://github.com/Javierpang123/CM3070-FYP-Security-Incident-Triage-Assistant.git
+cd CM3070-FYP-Security-Incident-Triage-Assistant
+```
+
+### 3. Set up a virtual environment
+```bash
+python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # macOS/Linux
+```
+
+### 4. Install Python dependencies
+```
+pip install -r requirements.txt
+```
+
+### 5. Pull the Mistral model via Ollama
+```
+ollama pull mistral
+```
+
+### 6. Run the app
+```bash
+python run.py
+```
+Then open **http://127.0.0.1:5000** in your browser.
+
+### Note on First Run!
+On the very first run, BLIP (vision model) and Whisper (speech model) will each download their pre-trained weights automatically and cache them locally, which **requires an internet connection ONCE**. 
+
+**Every run after that is fully offline** with no further downloads required, and no incident data ever leaves the machine.
+
+You maybe see a one-line warning in the terminal about unauthenticated Hugging Face Hub requests when running analysis with a screenshot input, but no need worry, as this is harmless and does not affect functionality or accuracy and it's just a rate-limit notice from the underlying model library.
