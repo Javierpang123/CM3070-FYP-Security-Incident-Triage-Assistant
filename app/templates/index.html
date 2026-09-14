@@ -9,7 +9,7 @@
     <body>
 
         <!-- Title -->
-        <div class="page-title"> Multimodal Security Incident Triage Assistant  (⚡Flashpoint )</div>
+        <div class="page-title"> Multimodal Security Incident Triage Assistant (Flashpoint)</div>
 
         <!-- Row 1: Three input panels -->
         <div class="input-row">
@@ -406,7 +406,7 @@
                                      label: 'Breakdown of findings extracted from voice note' }];
 
                 // Iterate through each modality configuration and 
-                // update the corresponding breakdown cell if data exists
+                // update the corresponding permodality breakdown cell if data exists
                 modConfig.forEach(({ id, key, label }) => {
                     const data = breakdown[key];
                     const weight = weights[key];
@@ -420,11 +420,11 @@
                                 <span class="mod-name">${label}</span>
                             </div>
 
-                            <div class="mod-confidence">${Math.round(data.confidence * 100)}%</div>
-                            <div class="mod-tactic">🎯 ${escapeHtml(data.attack_classification || 'Unknown')}</div>
-                            <div class="mod-tactic-explanation">${escapeHtml(tactic_descriptions[data.attack_classification] || tactic_descriptions['Unknown'])}</div>
-                            <div class="mod-weight">Fusion weight: ${weight ? (weight * 100).toFixed(2) + '%' : '—'}</div>
-                            <div class="mod-summary">${escapeHtml(data.summary || '')}</div>`;
+                            <div class="mod-confidence"> ${Math.round(data.confidence * 100)}% </div>
+                            <div class="mod-tactic"> ${escapeHtml(data.attack_classification || 'Unknown')} </div>
+                            <div class="mod-tactic-explanation"> ${escapeHtml(tactic_descriptions[data.attack_classification] || tactic_descriptions['Unknown'])} </div>
+                            <div class="mod-weight"> Fusion weight: ${weight ? (weight * 100).toFixed(2) + '%' : '—'} </div>
+                            <div class="mod-summary"> ${escapeHtml(data.summary || '')}</div>`;
                     // Else keep the cell in inactive state with "No input provided" message
                     } else {
                         cell.classList.add('inactive');
@@ -436,7 +436,7 @@
                     }
                 });
 
-                // Activate output dot indicator to signal that results have been rendered
+                // Signal that results have been rendered
                 document.getElementById('dot-output').classList.add('active');
             }
 
