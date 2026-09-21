@@ -82,17 +82,3 @@ class TestVisionModel:
         # Verify the error result contains zero confidence and an error summary
         assert result["confidence"] == 0.0
         assert "[ERROR]" in result["summary"]
-
-
-
-
-
-
-
-    # # Test to verify that entity extraction correctly identifies IP addresses and event IDs
-    # def test_entity_extraction_finds_ip(self, sample_vision_result):
-    #     assert "192.168.1.105" in sample_vision_result["entities"]
-
-    # # Test to verify that entity extraction correctly identifies event IDs
-    # def test_entity_extraction_finds_event_id(self, sample_vision_result):
-    #     assert "EventID:4625" in sample_vision_result["entities"]

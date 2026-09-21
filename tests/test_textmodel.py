@@ -100,22 +100,3 @@ class TestTextModel:
         prompt = call_args[1]["json"]["prompt"]
         assert "EventID" in prompt
         
-        
-        
-        
-        
-        
-        
-        
-    # # Test to verify that Ollama strip markdown fences Mistral sometimes adds.
-    # @patch("models.text_model.requests.post")
-    # def test_markdown_fenced_response_is_handled(self, mock_post):
-    #     fenced = '```json\n{"attack_classification": "Discovery", "severity": 2, "entities": [], "summary": "Scan detected.", "confidence_hint": "medium"}\n```'
-    #     mock_response = MagicMock()
-    #     mock_response.json.return_value = {"response": fenced}
-    #     mock_response.raise_for_status = MagicMock()
-    #     mock_post.return_value = mock_response
-
-    #     from models.text_model import analyse_text
-    #     result = analyse_text("nmap scan log")
-    #     assert result["attack_classification"] == "Discovery"
