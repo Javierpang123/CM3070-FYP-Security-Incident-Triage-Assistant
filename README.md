@@ -23,7 +23,8 @@ Accepts short analyst voice recordings and transcribes them to add first-person 
 The three model outputs are passed to an orchestration layer that combines them, using weighted scoring, into a single unified verdict. Each modality's contribution is surfaced in the output so you can see exactly where the triage is coming from.
  
 **Triage Output**
-Each incident produces:
+
+Each incident after analysis produces the following:
 - A severity rating (1–5)
 - An attack classification with MITRE ATT&CK mapping
 - A recommended action list
@@ -96,3 +97,10 @@ On the very first run, BLIP (vision model) and Whisper (speech model) will each 
 **Every run after that is fully offline** with no further downloads required, and no incident data ever leaves the machine.
 
 You maybe see a one-line warning in the terminal about unauthenticated Hugging Face Hub requests when running analysis with a screenshot input, but no need worry, as this is harmless and does not affect functionality or accuracy and it's just a rate-limit notice from the underlying model library.
+
+## Acknowledgements
+
+The evaluation dataset used to test and validate Flashpoint's triage pipeline was built from **[EVTX-ATTACK-SAMPLES](https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES)** by Samir Bousseaden, a curated collection of Windows Event Log samples organized by MITRE ATT&CK tactic, licensed under GPL-3.0. 
+
+- These logs were used both to construct the raw log text fed to the text-analysis model, and to populate a self-hosted Kibana dashboard, screenshots of which were used as the visual input for the vision model. 
+- Full dataset construction methodology is documented in the final report.
