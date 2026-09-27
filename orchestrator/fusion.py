@@ -1,26 +1,18 @@
 # Late fusion orchestrator for Flashpoint.
 
-"""
-Combines standardised outputs from the three model wrappers using
-fixed weights (text=0.5, vision=0.3, speech=0.2) to produce a single
-triage result.
-"""
+# Combines standardised outputs from the three model wrappers using fixed weights (text=0.5, vision=0.3, speech=0.2) 
+# to produce a single triage result.
 
-"""
-Fusion strategy: 
-weighted voting across modalities for ATT&CK classification and severity, 
-with confidence-gated weight redistribution when a modality is absent or failed.
-"""
+# Fusion strategy is by using weighted voting across modalities for ATT&CK classification and severity, 
+# with confidence-gated weight redistribution when a modality is absent or failed.
 
 import logging
 from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-# Fixed fusion weights
-BASE_WEIGHTS = {"text": 0.5,
-                "vision": 0.3,
-                "speech": 0.2}
+# FIXED FUSION WEIGHTS
+BASE_WEIGHTS = {"text": 0.5, "vision": 0.3, "speech": 0.2}
 
 # ---------------------------------------------------------------------------
 # MITRE ATT&CK tactic mapped to their respective recommended actions 
@@ -44,16 +36,16 @@ RECOMMENDED_ACTIONS = {
     "Privilege Escalation": [
         "Revoke elevated privileges on the affected account immediately.",
         "Audit recent privilege changes in Active Directory.",
-        "Review UAC and token manipulation events (Event IDs 4672, 4673).",
+        "Review UAC and token manipulation events.",
     ],
     "Defense Evasion": [
         "Restore and review tampered or cleared event logs.",
         "Check for disabled security tools or modified audit policies.",
-        "Escalate to senior analyst — active attacker likely present.",
+        "Escalate to higher management that active attacker likely present.",
     ],
     "Credential Access": [
         "Immediately reset all credentials for accounts on the affected host.",
-        "Check for LSASS access events (Event ID 4656, 10) and memory dumps.",
+        "Check for LSASS access events and memory dumps.",
         "Enable additional monitoring on privileged accounts across the domain.",
     ],
     "Discovery": [
@@ -89,7 +81,7 @@ RECOMMENDED_ACTIONS = {
     "Reconnaissance": [
         "Log and monitor the source for follow-on activity.",
         "Review exposed attack surface that may have been probed.",
-        "No immediate containment required — maintain elevated vigilance.",
+        "No immediate containment required, continue monitoring.",
     ],
     "Resource Development": [
         "Monitor for follow-on intrusion attempts from identified infrastructure.",
@@ -108,9 +100,9 @@ RECOMMENDED_ACTIONS = {
 # CORE FUSION LOGIC FUNCTIONS 
 # ---------------------------------------------------------------------------
 
-# Function to compute effective fusion weights based on which modalities are present and
-# have non-zero confidence. Absent or failed modalities (confidence=0.0)
-# are dropped and their weight redistributed proportionally.
+# Function to compute effective fusion weights 
+# based on which modalities are present and have non-zero confidence. 
+# Absent or failed modalities are dropped and their weight redistributed proportionally.
 def redistribute_weights(results: dict) -> dict:
     
     # Identify active modalities with non-zero confidence
@@ -232,9 +224,9 @@ def late_fusion_orchestrator(text_result: Optional[dict] = None,
                "vision": vision_result,
                "speech": speech_result}
 
-    # Validate that at least one modality is here
-    # Any combination of modalities will accepted — absent modalities should be
-    # passed as None and their weight is redistributed to active modalities.
+    # Validate that at least one modality is here.
+    # Any combination of modalities will accepted. 
+    # absent modalities should be passed as None and their weight is redistributed to active modalities.
     if all(r is None for r in results.values()):
         logger.error("fuse() called with no modality inputs")
         return triage_error("No modality inputs provided")
@@ -242,7 +234,7 @@ def late_fusion_orchestrator(text_result: Optional[dict] = None,
     # Log any modalities that returned error results
     for mod, result in results.items():
         if result is not None and result.get("confidence", 0.0) == 0.0:
-            logger.warning("Modality '%s' has zero confidence — likely an error result. "
+            logger.warning("Modality '%s' has zero confidence, likely an error result. "
                            "Excluding from fusion.", mod)
 
     # Compute effective fusion weights based on which modalities are present 
@@ -250,7 +242,7 @@ def late_fusion_orchestrator(text_result: Optional[dict] = None,
     effective_weights = redistribute_weights(results)
 
     if not effective_weights:
-        logger.error("All modalities have zero confidence — cannot fuse")
+        logger.error("All modalities have zero confidence, Fusion not possible")
         return triage_error("All modalities returned errors")
 
     # Perform fusion to compute final triage result
@@ -260,7 +252,7 @@ def late_fusion_orchestrator(text_result: Optional[dict] = None,
     confidence = fused_confidence(results, effective_weights)
     actions = RECOMMENDED_ACTIONS.get(attack_cls, RECOMMENDED_ACTIONS["Unknown"])
 
-    # Modality breakdown — expose each wrapper's output, null if absent
+    # Modality breakdown that exposes each wrapper's output, null if modality is absent
     breakdown = {
         mod: (
             {
